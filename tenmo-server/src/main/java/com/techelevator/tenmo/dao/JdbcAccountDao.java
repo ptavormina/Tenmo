@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 @Component
@@ -39,16 +40,16 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public Account updateBalance(Account accountToUpdate, double balanceAmount) throws AccountNotFoundException {
+    public Account updateBalance(Account accountToUpdate, BigDecimal balanceAmount) throws AccountNotFoundException {
         String sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
         jdbcTemplate.update(sql, accountToUpdate.getBalance(), accountToUpdate.getAccountId());
         return accountToUpdate;
     }
 
     @Override
-    public double getBalanceByUserId(int userId) throws AccountNotFoundException {
+    public BigDecimal getBalanceByUserId(int userId) throws AccountNotFoundException {
         String sql = "SELECT balance FROM accounts " +
-                "JOIN users USING (user_id) WHERE user_id = ?;";
+                     "WHERE user_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
 
         if (results.next()) {
@@ -67,7 +68,7 @@ public class JdbcAccountDao implements AccountDao {
         Account account = new Account();
         account.setAccountId(rowSet.getInt("account_id"));
         account.setUserId(rowSet.getInt("user_id"));
-        account.setBalance(rowSet.getDouble("balance"));
+        account.setBalance(rowSet.getBigDecimal("balance"));
         return account;
     }
 }
