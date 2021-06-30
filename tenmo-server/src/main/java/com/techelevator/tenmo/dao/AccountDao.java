@@ -11,11 +11,9 @@ public interface AccountDao {
 
     Account find(int accountId) throws AccountNotFoundException;
 
-    Account update(Account account, int accountId);
+    Account updateBalance(Account account, double balanceAmount) throws AccountNotFoundException;
 
-    Account updateBalance(int accountId, double transferAmount);
-
-    double getBalanceByUserId(int userId);
+    double getBalanceByUserId(int userId) throws AccountNotFoundException;
 
     void delete(int accountId);
 

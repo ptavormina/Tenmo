@@ -3,6 +3,7 @@ package com.techelevator.tenmo.dao;
 import com.techelevator.tenmo.model.Account;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -38,23 +39,28 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public Account update(Account account, int accountId) {
-        return null;
+    public Account updateBalance(Account accountToUpdate, double balanceAmount) throws AccountNotFoundException {
+        String sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
+        jdbcTemplate.update(sql, accountToUpdate.getBalance(), accountToUpdate.getAccountId());
+        return accountToUpdate;
     }
 
     @Override
-    public Account updateBalance(int accountId, double transferAmount) {
-        return null;
-    }
+    public double getBalanceByUserId(int userId) throws AccountNotFoundException {
+        String sql = "SELECT balance FROM accounts " +
+                "JOIN users USING (user_id) WHERE user_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
 
-    @Override
-    public double getBalanceByUserId(int userId) {
-        return 0;
+        if (results.next()) {
+            Account account = mapRowToAccount(results);
+            return account.getBalance();
+        } throw new AccountNotFoundException("Unable to find account associated with User ID " + userId);
     }
 
     @Override
     public void delete(int accountId) {
-
+        String sql = "DELETE FROM accounts WHERE account_id = ?;";
+        jdbcTemplate.update(sql, accountId);
     }
 
     private Account mapRowToAccount(SqlRowSet rowSet) {
