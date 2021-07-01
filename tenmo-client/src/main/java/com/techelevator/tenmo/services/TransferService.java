@@ -12,25 +12,20 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.print.attribute.standard.Media;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class TransferService {
     private String baseUrl;
     private RestTemplate restTemplate = new RestTemplate();
     private AuthenticatedUser user;
-    private Account account;
 
-    public TransferService(String baseUrl, AuthenticatedUser user, Account account){
+    public TransferService(String baseUrl, AuthenticatedUser user){
         this.baseUrl = baseUrl;
         this.user = user;
-        this.account = account;
     }
-
-    public Transfer sendTransfer(){
-        return null;
-    }
-
 
     public Transfer[] listTransfers(){
         Transfer[] transfers = null;
@@ -42,15 +37,66 @@ public class TransferService {
         return transfers;
     }
 
-    public User[] listAllUsers(){
+
+    public void sendTransfer(){
+        Transfer transfer = new Transfer();
         User[] users = null;
-        try{
-            users = restTemplate.exchange(baseUrl + "users" , HttpMethod.GET, makeAuthEntity(), User[].class).getBody();
-        }catch (RestClientResponseException e){
-            System.out.println("Your request could not be completed.");
+        Scanner scanner = new Scanner(System.in);
+
+        try {
+            System.out.println("-------------------------------------------");
+            System.out.println("Users:");
+            System.out.println("Id\t\tName");
+            System.out.println("-------------------------------------------");
+            users = restTemplate.exchange(baseUrl + "users", HttpMethod.GET, makeAuthEntity(), User[].class).getBody();
+
+            for (User recipient : users) {
+                if (!recipient.getId().equals(user.getUser().getId())) {
+                    System.out.println(recipient.getId() + "\t" + recipient.getUsername());
+                }
+            }
+
+            System.out.println("Enter the ID of the User you're sending to, or enter 0 to cancel:");
+            String response = scanner.nextLine();
+            int recipientId = Integer.parseInt(response);
+            if (recipientId != 0) {
+                transfer.setAccountFrom(user.getUser().getId());
+                transfer.setAccountTo(recipientId);
+                System.out.println("Enter amount: ");
+                try {
+                    String amountResponse = scanner.nextLine();
+                    double transferAmount = Double.parseDouble(amountResponse);
+                    if (transferAmount > 0) {
+                        BigDecimal transferAmount1 = new BigDecimal(transferAmount);
+                        transfer.setTransferAmount(transferAmount1);
+                    }
+                } catch (Exception e) {
+                    System.out.println("IDK dude");
+                }
+                System.out.println(restTemplate.exchange(baseUrl + "transfer", HttpMethod.POST, transferHttpEntity(transfer), String.class).getBody());
+            }
+        } catch (Exception e) {
+            System.out.println("No good");
         }
-        return users;
     }
+
+//    public User[] listAllUsers(){
+//        User[] users = null;
+//        try{
+//            users = restTemplate.getForObject(baseUrl + "users", User[].class);
+//            for (User recipient : users) {
+//                if (recipient.getId() != user.getUser().getId()) {
+//                    System.out.println(recipient.getId() + "\t" + recipient.getUsername());
+//                }
+//            }
+//        }catch (RestClientResponseException e){
+//            System.out.println("Your request could not be completed.");
+//        }
+//        return users;
+//    }
+
+
+
 
     private HttpEntity<Transfer> transferHttpEntity(Transfer transfer){
         HttpHeaders headers = new HttpHeaders();

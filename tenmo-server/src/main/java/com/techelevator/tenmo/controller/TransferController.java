@@ -28,7 +28,7 @@ public class TransferController {
 
 
     @RequestMapping(path = "transfers", method = RequestMethod.POST)
-    public Transfer sendTransfer(@RequestBody @Valid Transfer transfer) throws AccountNotFoundException {
+    public String sendTransfer(@RequestBody @Valid Transfer transfer) throws AccountNotFoundException {
       return transferDao.sendTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount());
     }
 }

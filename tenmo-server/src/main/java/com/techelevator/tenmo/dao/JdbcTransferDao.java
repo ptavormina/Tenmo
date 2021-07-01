@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.TransferNotFoundException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,7 +18,7 @@ public class JdbcTransferDao implements TransferDao{
     private AccountDao accountDao;
 
     public JdbcTransferDao(JdbcTemplate jdbctemplate){
-        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcTemplate = jdbctemplate;
     }
 
 
@@ -58,16 +59,25 @@ public class JdbcTransferDao implements TransferDao{
         return transfer;
     }
 
-    @Override
-    public Transfer sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
-        Transfer transfer = null;
-        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?) RETURNING transfer_id;";
-        int newTransferId = jdbcTemplate.queryForObject(sql, int.class, accountFrom, accountTo, transferAmount);
-        accountDao.addFunds(transferAmount, accountTo);
-        accountDao.subtractFunds(transferAmount, accountFrom);
+//    @Override
+//    public Transfer sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
+//        Transfer transfer = null;
+//        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?) RETURNING transfer_id;";
+//        int newTransferId = jdbcTemplate.queryForObject(sql, int.class, accountFrom, accountTo, transferAmount);
+//        accountDao.addFunds(transferAmount, accountTo);
+//        accountDao.subtractFunds(transferAmount, accountFrom);
+//
+//        return getTransferDetails(newTransferId);
+//    }
 
-        return getTransferDetails(newTransferId);
-    }
+        @Override
+        public String sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
+            String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?,);";
+            jdbcTemplate.update(sql, accountFrom, accountTo, transferAmount);
+            accountDao.addFunds(transferAmount, accountTo);
+            accountDao.subtractFunds(transferAmount, accountFrom);
+            return "success!";
+        }
 
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet){
