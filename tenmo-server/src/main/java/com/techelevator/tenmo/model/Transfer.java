@@ -3,6 +3,7 @@ package com.techelevator.tenmo.model;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.math.BigDecimal;
 
 public class Transfer {
 
@@ -17,15 +18,52 @@ public class Transfer {
     private int accountTo;
     @NotBlank
     @Positive
-    private double transferAmount;
+    private BigDecimal transferAmount;
+    private String transferType;
+    private String transferStatus;
+    private String userFrom;
+    private String userTo;
 
-    public Transfer (int transferId, int statusId, int typeId, int accountFrom, int accountTo, double transferAmount) {
+
+    /*public Transfer() {
         this.transferId = transferId;
         this.statusId = statusId;
         this.typeId = typeId;
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
         this.transferAmount = transferAmount;
+    }*/
+
+    public String getTransferType() {
+        return transferType;
+    }
+
+    public void setTransferType(String transferType) {
+        this.transferType = transferType;
+    }
+
+    public String getTransferStatus() {
+        return transferStatus;
+    }
+
+    public void setTransferStatus(String transferStatus) {
+        this.transferStatus = transferStatus;
+    }
+
+    public String getUserFrom() {
+        return userFrom;
+    }
+
+    public void setUserFrom(String userFrom) {
+        this.userFrom = userFrom;
+    }
+
+    public String getUserTo() {
+        return userTo;
+    }
+
+    public void setUserTo(String userTo) {
+        this.userTo = userTo;
     }
 
     public int getTransferId() {
@@ -68,11 +106,11 @@ public class Transfer {
         this.accountTo = accountTo;
     }
 
-    public double getTransferAmount() {
+    public BigDecimal getTransferAmount() {
         return transferAmount;
     }
 
-    public void setTransferAmount(double transferAmount) {
+    public void setTransferAmount(BigDecimal transferAmount) {
         this.transferAmount = transferAmount;
     }
 }
