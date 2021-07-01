@@ -50,6 +50,7 @@ public class JdbcAccountDao implements AccountDao {
     public BigDecimal getBalanceByUserId(int userId) throws AccountNotFoundException {
         String sql = "SELECT balance FROM accounts " +
                      "WHERE user_id = ?;";
+
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
 
         if (results.next()) {
