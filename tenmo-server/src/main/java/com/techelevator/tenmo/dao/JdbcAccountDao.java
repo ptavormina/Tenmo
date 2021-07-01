@@ -50,11 +50,10 @@ public class JdbcAccountDao implements AccountDao {
     public BigDecimal getBalanceByUserId(int userId) throws AccountNotFoundException {
         String sql = "SELECT balance FROM accounts " +
                      "WHERE user_id = ?;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
 
         if (results.next()) {
-            Account account = mapRowToAccount(results);
-            return account.getBalance();
+            return results.getBigDecimal("balance");
         } throw new AccountNotFoundException("Unable to find account associated with User ID " + userId);
     }
 

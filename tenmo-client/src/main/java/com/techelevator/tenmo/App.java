@@ -29,17 +29,15 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
-    private AccountService accountService;
 
     public static void main(String[] args) {
-    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL), new AccountService(API_BASE_URL));
+    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
     	app.run();
     }
 
-    public App(ConsoleService console, AuthenticationService authenticationService, AccountService accountService) {
+    public App(ConsoleService console, AuthenticationService authenticationService) {
 		this.console = console;
 		this.authenticationService = authenticationService;
-		this.accountService = accountService;
 	}
 
 	public void run() {
@@ -73,9 +71,13 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		}
 	}
 
-	private BigDecimal viewCurrentBalance() {
-		// TODO Auto-generated method stub
-		return accountService.getAccountBalance(currentUser.getUser().getId());
+	private void viewCurrentBalance() {
+		AccountService accountService = new AccountService(API_BASE_URL, currentUser);
+		try {
+			accountService.getAccountBalance();
+		} catch (NullPointerException e) {
+			System.out.println("Account not found, sorry :(");
+		}
 	}
 
 	private void viewTransferHistory() {
