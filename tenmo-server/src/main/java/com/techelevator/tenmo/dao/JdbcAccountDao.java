@@ -15,6 +15,10 @@ public class JdbcAccountDao implements AccountDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    public JdbcAccountDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     @Override
     public List<Account> list() {
         List<Account> accounts = new ArrayList<>();
@@ -26,7 +30,6 @@ public class JdbcAccountDao implements AccountDao {
             accounts.add(account);
         }
         return accounts;
-
     }
 
     @Override
@@ -40,10 +43,28 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public Account updateBalance(Account accountToUpdate, BigDecimal balanceAmount) throws AccountNotFoundException {
+    public Account findByUserId(int userId) throws AccountNotFoundException {
+        return null;
+    }
+
+    @Override
+    public BigDecimal addFunds(BigDecimal amount, int accountId) throws AccountNotFoundException {
+        Account account = find(accountId);
+        BigDecimal updatedBalance = account.getBalance().add(amount);
         String sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
-        jdbcTemplate.update(sql, accountToUpdate.getBalance(), accountToUpdate.getAccountId());
-        return accountToUpdate;
+
+        jdbcTemplate.update(sql, updatedBalance, accountId);
+        return account.getBalance();
+    }
+
+    @Override
+    public BigDecimal subtractFunds(BigDecimal amount, int accountId) throws AccountNotFoundException {
+        Account account = find(accountId);
+        BigDecimal updatedBalance = account.getBalance().subtract(amount);
+        String sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
+
+        jdbcTemplate.update(sql, updatedBalance, accountId);
+        return account.getBalance();
     }
 
     @Override

@@ -12,7 +12,11 @@ public interface AccountDao {
 
     Account find(int accountId) throws AccountNotFoundException;
 
-    Account updateBalance(Account account, BigDecimal balanceAmount) throws AccountNotFoundException;
+    Account findByUserId(int userId) throws AccountNotFoundException;
+
+    BigDecimal addFunds(BigDecimal amount, int accountId) throws AccountNotFoundException;
+
+    BigDecimal subtractFunds(BigDecimal amount, int accountId) throws AccountNotFoundException;
 
     BigDecimal getBalanceByUserId(int userId) throws AccountNotFoundException;
 
