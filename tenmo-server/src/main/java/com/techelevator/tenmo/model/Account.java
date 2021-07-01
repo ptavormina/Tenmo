@@ -5,13 +5,12 @@ import javax.validation.constraints.NotNull;
 
 public class Account {
     private int accountId;
-
     @NotNull
     private int userId;
-    @Min(0)
+    @Min(value = 0)
     private double balance;
 
-    public Account (int accountId, int userId, double balance){
+    public Account (int accountId, int userId, double balance) {
         this.accountId = accountId;
         this.userId = userId;
         this.balance = balance;
