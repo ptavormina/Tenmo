@@ -15,4 +15,7 @@ public interface TransferDao {
     Transfer sendTransfer(Long accountFrom, Long accountTo, BigDecimal transferAmount);
 
 
+    void delete (int transferId);
+
+    Transfer update (Transfer transfer, int transferId);
 }
