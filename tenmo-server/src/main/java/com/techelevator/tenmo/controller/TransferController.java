@@ -5,6 +5,7 @@ import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Path;
 import javax.validation.Valid;
 import java.math.BigDecimal;
@@ -25,9 +26,9 @@ public class TransferController {
         return transferDao.getTransferDetails(transferId);
     }
 
-    //TODO figure out the proper formatting and if we need balance etc.
+
     @RequestMapping(path = "transfers", method = RequestMethod.POST)
-    public Transfer sendTransfer(@RequestBody @Valid Transfer transfer){
-        return transferDao.sendTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount())
+    public Transfer sendTransfer(@RequestBody @Valid Transfer transfer) throws AccountNotFoundException {
+      return transferDao.sendTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount());
     }
 }

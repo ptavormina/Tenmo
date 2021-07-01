@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 @Component
 public class JdbcTransferDao implements TransferDao{
     private JdbcTemplate jdbcTemplate;
+    private AccountDao accountDao;
 
     public JdbcTransferDao(JdbcTemplate jdbctemplate){
         this.jdbcTemplate = jdbcTemplate;
@@ -57,19 +59,24 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
-    public Transfer sendTransfer(Long accountFrom, Long accountTo, BigDecimal transferAmount) {
-        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?);";
-        return null;
+    public Transfer sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
+        Transfer transfer = null;
+        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?) RETURNING transfer_id;";
+        int newTransferId = jdbcTemplate.queryForObject(sql, int.class, accountFrom, accountTo, transferAmount);
+        accountDao.addFunds(transferAmount, accountTo);
+        accountDao.subtractFunds(transferAmount, accountFrom);
+
+        return getTransferDetails(newTransferId);
     }
 
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet){
         Transfer t = new Transfer();
-        t.setTransferId(rowSet.getLong("transfer_id"));
+        t.setTransferId(rowSet.getInt("transfer_id"));
         t.setTypeId(rowSet.getInt("transfer_type_id"));
         t.setStatusId(rowSet.getInt("transfer_status_id"));
-        t.setAccountFrom(rowSet.getLong("account_from"));
-        t.setAccountTo(rowSet.getLong("account_to"));
+        t.setAccountFrom(rowSet.getInt("account_from"));
+        t.setAccountTo(rowSet.getInt("account_to"));
         t.setTransferAmount(rowSet.getBigDecimal("amount"));
 
         t.setTransferStatus(rowSet.getString("transfer_status_desc"));
