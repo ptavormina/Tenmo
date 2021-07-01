@@ -12,6 +12,11 @@ public interface TransferDao {
 
     Transfer getTransferDetails(int transferId);
 
+    List<Transfer> listAllTransfers();
+
     Transfer transfer(int accountFrom, int accountTo, double transferAmount);
 
+    void delete (int transferId);
+
+    Transfer update (Transfer transfer, int transferId);
 }
