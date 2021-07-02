@@ -61,8 +61,8 @@ public class TransferService {
             String response = scanner.nextLine();
             int recipientId = Integer.parseInt(response);
             if (recipientId != 0) {
-                transfer.setAccountFrom(user.getUser().getId());
-                transfer.setAccountTo(recipientId);
+                transfer.setAccountFrom(user.getUser().getId() + 1000);
+                transfer.setAccountTo(recipientId + 1000);
                 System.out.println("Enter amount: ");
                 try {
                     String amountResponse = scanner.nextLine();

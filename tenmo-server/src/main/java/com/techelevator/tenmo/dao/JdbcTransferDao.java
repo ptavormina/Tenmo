@@ -17,8 +17,9 @@ public class JdbcTransferDao implements TransferDao{
     private JdbcTemplate jdbcTemplate;
     private AccountDao accountDao;
 
-    public JdbcTransferDao(JdbcTemplate jdbctemplate){
+    public JdbcTransferDao(JdbcTemplate jdbctemplate, AccountDao accountDao){
         this.jdbcTemplate = jdbctemplate;
+        this.accountDao = accountDao;
     }
 
 
@@ -63,10 +64,9 @@ public class JdbcTransferDao implements TransferDao{
 //    public String sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
 //        Transfer transfer = null;
 //        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?) RETURNING transfer_id;";
-//        int newTransferId = jdbcTemplate.queryForObject(sql, int.class, accountFrom, accountTo, transferAmount);
+//        jdbcTemplate.queryForObject(sql, int.class, accountFrom, accountTo, transferAmount);
 //        accountDao.addFunds(transferAmount, accountTo);
 //        accountDao.subtractFunds(transferAmount, accountFrom);
-//        jdbcTemplate.update(sql, accountFrom, accountTo, transferAmount);
 //        return "Success!";
 //    }
 
@@ -74,6 +74,7 @@ public class JdbcTransferDao implements TransferDao{
         public String sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
             String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?);";
             jdbcTemplate.update(sql, accountFrom, accountTo, transferAmount);
+            System.out.println("Account to: " + accountTo + " Account from: " + accountFrom);
             accountDao.addFunds(transferAmount, accountTo);
             accountDao.subtractFunds(transferAmount, accountFrom);
             return "success!";
