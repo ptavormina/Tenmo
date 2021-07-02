@@ -8,16 +8,16 @@ import java.math.BigDecimal;
 public class Transfer {
 
     private int transferId;
-//    @NotBlank
+    @NotBlank
     private int statusId;
-//    @NotBlank
+    @NotBlank
     private int typeId;
-//    @NotBlank
+    @NotBlank
     private int accountFrom;
-//    @NotBlank
+    @NotBlank
     private int accountTo;
-//    @NotBlank
-//    @Positive
+    @NotBlank
+    @Positive
     private BigDecimal transferAmount;
     private String transferType;
     private String transferStatus;

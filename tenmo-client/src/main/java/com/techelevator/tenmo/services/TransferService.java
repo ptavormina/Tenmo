@@ -12,6 +12,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.print.attribute.standard.Media;
+import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class TransferService {
     }
 
 
-    public void sendTransfer(){
+    public void sendTransfer() {
         Transfer transfer = new Transfer();
         User[] users = null;
         Scanner scanner = new Scanner(System.in);
@@ -60,13 +61,22 @@ public class TransferService {
             System.out.println("Enter the ID of the User you're sending to, or enter 0 to cancel:");
             String response = scanner.nextLine();
             int recipientId = Integer.parseInt(response);
-            if (recipientId != 0) {
-                transfer.setAccountFrom(user.getUser().getId() + 1000);
-                transfer.setAccountTo(recipientId + 1000);
-                System.out.println("Enter amount: ");
+            if (recipientId == 0) {
+                return;
+            }
+
+            transfer.setAccountFrom(user.getUser().getId() + 1000);
+            transfer.setAccountTo(recipientId + 1000);
+            System.out.println("Enter amount: ");
+
                 try {
                     String amountResponse = scanner.nextLine();
                     double transferAmount = Double.parseDouble(amountResponse);
+                    if (transferAmount <= 0) {
+                        System.out.println("Transfers must be a positive, nonzero amount. Try again...");
+                        System.out.println();
+                        sendTransfer();
+                    }
                     if (transferAmount > 0) {
                         BigDecimal transferAmount1 = new BigDecimal(transferAmount);
                         transfer.setTransferAmount(transferAmount1);
@@ -74,10 +84,13 @@ public class TransferService {
                 } catch (Exception e) {
                     System.out.println("IDK dude");
                 }
+
                 restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, transferHttpEntity(transfer), String.class).getBody();
-            }
+                System.out.println("Transfer successful.");
+                System.out.println("-------------------------------------------");
+
         } catch (Exception e) {
-            System.out.println("No good");
+            System.out.println("Invalid user ID");
         }
     }
 
