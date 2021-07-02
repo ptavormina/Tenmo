@@ -100,7 +100,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		
+		TransferService transferService = new TransferService(API_BASE_URL, currentUser);
+		transferService.sendTransfer();
 	}
 
 	private void requestBucks() {
