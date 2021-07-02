@@ -37,18 +37,17 @@ public class JdbcTransferDao implements TransferDao{
         }
         return transfers;
     }
-
     @Override
     public Transfer getTransferDetails(int transferId) {
         Transfer transfer = null;
-        String sql = "Select t.* f.username AS userFrom, t.username AS userTo, ts.transfer_status_desc, tt.transfer_type_desc FROM transfers t " +
-                "JOIN accounts a ON t.account_from = a.account_id " +
-                "JOIN accounts b ON t.account_to = b.account_id " +
+        String sql = "Select transfers.*, f.username AS userFrom, t.username AS userTo, ts.transfer_status_desc, tt.transfer_type_desc FROM transfers " +
+                "JOIN accounts a ON transfers.account_from = a.account_id " +
+                "JOIN accounts b ON transfers.account_to = b.account_id " +
                 "JOIN users f ON a.user_id = f.user_id " +
                 "JOIN users t ON b.user_id = t.user_id " +
-                "JOIN transfer_statuses ts ON t.transfer_status_id = ts.transfer_status_id " +
-                "JOIN transfer_types tt ON t.transfer_type_id = tt.transfer_type_id " +
-                "WHERE t.transfer_id = ?;";
+                "JOIN transfer_statuses ts ON transfers.transfer_status_id = ts.transfer_status_id " +
+                "JOIN transfer_types tt ON transfers.transfer_type_id = tt.transfer_type_id " +
+                "WHERE transfers.transfer_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
         if(results.next()){
             transfer = mapRowToTransfer(results);
@@ -57,7 +56,6 @@ public class JdbcTransferDao implements TransferDao{
         }
         return transfer;
     }
-
     @Override
     public Transfer sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
         Transfer transfer = null;

@@ -1,28 +1,81 @@
 package com.techelevator.tenmo.model;
 
+import java.math.BigDecimal;
+
 public class Transfer {
 
-    private Long transferId;
+    private int transferId;
     private int statusId;
     private int typeId;
-    private Long accountFrom;
-    private Long accountTo;
+    private int accountFrom;
+    private int accountTo;
+    private BigDecimal transferAmount;
+    private String transferType;
+    private String transferStatus;
+    private String userFrom;
+    private String userTo;
 
-    public Transfer(Long transferId, int statusId, int typeId, Long accountFrom, Long accountTo) {
+    public Transfer(int transferId, int statusId, int typeId, int accountFrom, int accountTo, BigDecimal transferAmount, String transferType, String transferStatus, String userFrom, String userTo) {
         this.transferId = transferId;
         this.statusId = statusId;
         this.typeId = typeId;
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
+        this.transferAmount = transferAmount;
+        this.transferType = transferType;
+        this.transferStatus = transferStatus;
+        this.userFrom = userFrom;
+        this.userTo = userTo;
     }
+
     public Transfer(){
     }
 
-    public Long getTransferId() {
+    public BigDecimal getTransferAmount() {
+        return transferAmount;
+    }
+
+    public void setTransferAmount(BigDecimal transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+    public String getTransferType() {
+        return transferType;
+    }
+
+    public void setTransferType(String transferType) {
+        this.transferType = transferType;
+    }
+
+    public String getTransferStatus() {
+        return transferStatus;
+    }
+
+    public void setTransferStatus(String transferStatus) {
+        this.transferStatus = transferStatus;
+    }
+
+    public String getUserFrom() {
+        return userFrom;
+    }
+
+    public void setUserFrom(String userFrom) {
+        this.userFrom = userFrom;
+    }
+
+    public String getUserTo() {
+        return userTo;
+    }
+
+    public void setUserTo(String userTo) {
+        this.userTo = userTo;
+    }
+
+    public int getTransferId() {
         return transferId;
     }
 
-    public void setTransferId(Long transferId) {
+    public void setTransferId(int transferId) {
         this.transferId = transferId;
     }
 
@@ -42,19 +95,19 @@ public class Transfer {
         this.typeId = typeId;
     }
 
-    public Long getAccountFrom() {
+    public int getAccountFrom() {
         return accountFrom;
     }
 
-    public void setAccountFrom(Long accountFrom) {
+    public void setAccountFrom(int accountFrom) {
         this.accountFrom = accountFrom;
     }
 
-    public Long getAccountTo() {
+    public int getAccountTo() {
         return accountTo;
     }
 
-    public void setAccountTo(Long accountTo) {
+    public void setAccountTo(int accountTo) {
         this.accountTo = accountTo;
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class TransferService {
     private String baseUrl;
@@ -21,7 +22,7 @@ public class TransferService {
     private AuthenticatedUser user;
     private Account account;
 
-    public TransferService(String baseUrl, AuthenticatedUser user, Account account){
+    public TransferService(String baseUrl, AuthenticatedUser user){
         this.baseUrl = baseUrl;
         this.user = user;
         this.account = account;
@@ -35,11 +36,48 @@ public class TransferService {
     public Transfer[] listTransfers(){
         Transfer[] transfers = null;
         try{
+            // TODO Should path be changed to user/{userId}/transfers??
             transfers = restTemplate.exchange(baseUrl + "transfers/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+            System.out.println("---------------------------------------------------\n " +
+                    "Transfers\n" +
+                    "ID         From/To         Amount\n" +
+                    "---------------------------------------------------");
+            for(Transfer one : transfers){
+                String fOrT = "";
+                String name = "";
+                if(user.getUser().getId() == one.getAccountFrom()){
+                    fOrT = "From:";
+                    name = one.getUserFrom();
+                }else{
+                    fOrT = "To:";
+                    name = one.getUserTo();
+                }
+                System.out.println(one.getTransferId() + "\t\t\t" + fOrT + user.getUser().getUsername() + "\t\t\t$ " + one.getTransferAmount());
+            }
         }catch (RestClientResponseException e){
             System.out.println("Could not find list of Transactions");
         }
         return transfers;
+    }
+    public Transfer transferDetails(){
+        Transfer transferDetails = new Transfer();
+        try{
+            //TODO this path be changed to user/{userId}/transfers/{transferId}
+            transferDetails = restTemplate.exchange(baseUrl + "transfers/" + transferDetails.getTransferId(), HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+            System.out.println("---------------------------------------------------\n" +
+                    "Transfer Details\n" +
+                    "---------------------------------------------------\n" +
+                    "Id:" + transferDetails.getTransferId() + "\n" +
+            "From:" + transferDetails.getUserFrom() + "\n" +
+            "To:" + transferDetails.getUserTo() + "\n" +
+            "Type:" + transferDetails.getTransferType() + "\n" +
+            "Status:" + transferDetails.getTransferStatus() + "\n" +
+            "Amount:" + transferDetails.getTransferAmount() + "\n");
+
+        }catch (RestClientResponseException e){
+            System.out.println("Could not find transaction.");
+        }
+        return transferDetails;
     }
 
     public User[] listAllUsers(){
