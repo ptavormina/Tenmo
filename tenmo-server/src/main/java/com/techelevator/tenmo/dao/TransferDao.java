@@ -13,6 +13,6 @@ public interface TransferDao {
 
     Transfer getTransferDetails(int transferId);
 
-    Transfer sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException;
+    String sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException;
 
 }
