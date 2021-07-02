@@ -1,6 +1,7 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
@@ -82,7 +83,13 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		TransferService transferService = new TransferService(API_BASE_URL, currentUser);
+		try{
+			transferService.listTransfers();
+		}catch (NullPointerException e){
+			System.out.println("List of accounts could not be accessed.");
+		}
+
 		
 	}
 
