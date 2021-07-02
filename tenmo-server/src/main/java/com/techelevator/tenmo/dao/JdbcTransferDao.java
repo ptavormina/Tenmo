@@ -60,19 +60,19 @@ public class JdbcTransferDao implements TransferDao{
     }
 
 //    @Override
-//    public Transfer sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
+//    public String sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
 //        Transfer transfer = null;
 //        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?) RETURNING transfer_id;";
 //        int newTransferId = jdbcTemplate.queryForObject(sql, int.class, accountFrom, accountTo, transferAmount);
 //        accountDao.addFunds(transferAmount, accountTo);
 //        accountDao.subtractFunds(transferAmount, accountFrom);
-//
-//        return getTransferDetails(newTransferId);
+//        jdbcTemplate.update(sql, accountFrom, accountTo, transferAmount);
+//        return "Success!";
 //    }
 
         @Override
         public String sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
-            String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?,);";
+            String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?);";
             jdbcTemplate.update(sql, accountFrom, accountTo, transferAmount);
             accountDao.addFunds(transferAmount, accountTo);
             accountDao.subtractFunds(transferAmount, accountFrom);

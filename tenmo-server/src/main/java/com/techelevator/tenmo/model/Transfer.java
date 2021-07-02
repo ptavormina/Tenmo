@@ -8,31 +8,35 @@ import java.math.BigDecimal;
 public class Transfer {
 
     private int transferId;
-    @NotBlank
+//    @NotBlank
     private int statusId;
-    @NotBlank
+//    @NotBlank
     private int typeId;
-    @NotBlank
+//    @NotBlank
     private int accountFrom;
-    @NotBlank
+//    @NotBlank
     private int accountTo;
-    @NotBlank
-    @Positive
+//    @NotBlank
+//    @Positive
     private BigDecimal transferAmount;
     private String transferType;
     private String transferStatus;
     private String userFrom;
     private String userTo;
 
-
-    /*public Transfer() {
-        this.transferId = transferId;
-        this.statusId = statusId;
-        this.typeId = typeId;
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
-        this.transferAmount = transferAmount;
-    }*/
+//
+//    public Transfer(int transferId, int statusId, int typeId, int accountFrom, int accountTo, BigDecimal transferAmount) {
+//        this.transferId = transferId;
+//        this.statusId = statusId;
+//        this.typeId = typeId;
+//        this.accountFrom = accountFrom;
+//        this.accountTo = accountTo;
+//        this.transferAmount = transferAmount;
+//    }
+//
+//    public Transfer() {
+//
+//    }
 
     public String getTransferType() {
         return transferType;

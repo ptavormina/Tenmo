@@ -15,6 +15,10 @@ import java.util.List;
 public class TransferController {
     private TransferDao transferDao;
 
+    public TransferController(TransferDao transferDao) {
+        this.transferDao = transferDao;
+    }
+
 
     @RequestMapping(path = "transfers/{userId}", method = RequestMethod.GET)
     public List<Transfer> transfers(@PathVariable int userId){
@@ -28,7 +32,7 @@ public class TransferController {
 
 
     @RequestMapping(path = "transfers", method = RequestMethod.POST)
-    public String sendTransfer(@RequestBody @Valid Transfer transfer) throws AccountNotFoundException {
+    public String sendTransfer(@RequestBody Transfer transfer) throws AccountNotFoundException {
       return transferDao.sendTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount());
     }
 }

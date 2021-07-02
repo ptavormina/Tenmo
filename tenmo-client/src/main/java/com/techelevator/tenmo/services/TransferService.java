@@ -44,11 +44,12 @@ public class TransferService {
         Scanner scanner = new Scanner(System.in);
 
         try {
+            users = restTemplate.exchange(baseUrl + "users", HttpMethod.GET, makeAuthEntity(), User[].class).getBody();
+
             System.out.println("-------------------------------------------");
             System.out.println("Users:");
             System.out.println("Id\t\tName");
             System.out.println("-------------------------------------------");
-            users = restTemplate.exchange(baseUrl + "users", HttpMethod.GET, makeAuthEntity(), User[].class).getBody();
 
             for (User recipient : users) {
                 if (!recipient.getId().equals(user.getUser().getId())) {
@@ -73,7 +74,7 @@ public class TransferService {
                 } catch (Exception e) {
                     System.out.println("IDK dude");
                 }
-                System.out.println(restTemplate.exchange(baseUrl + "transfer", HttpMethod.POST, transferHttpEntity(transfer), String.class).getBody());
+                restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, transferHttpEntity(transfer), String.class).getBody();
             }
         } catch (Exception e) {
             System.out.println("No good");
