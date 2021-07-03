@@ -54,7 +54,15 @@ public class TransferService {
                 System.out.println(one.getTransferId() + "\t\t\t" + fOrT + user.getUser().getUsername() + "\t\t\t$ " + one.getTransferAmount());
             }
             System.out.println("Please enter the transfer Id to view details (0 to cancel) :");
-           /* String input = scanner.nextLine();
+
+        }catch (RestClientResponseException e){
+            System.out.println("Could not find transaction.");
+        }
+        return transfers;
+
+    }
+
+            /* String input = scanner.nextLine();
             int transferId = Integer.parseInt(input);
             if (transferId == 0) {
                 for(Transfer details : transfers){
@@ -75,12 +83,7 @@ public class TransferService {
                     }
             }
         }*/
-        }catch (RestClientResponseException e){
-            System.out.println("Could not find transaction.");
-        }
-        return transfers;
 
-    }
 
 
     public void sendTransfer() {
