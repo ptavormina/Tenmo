@@ -68,12 +68,12 @@ public class TransferService {
                     System.out.println("---------------------------------------------------");
                     System.out.println("Transfer Details");
                     System.out.println("---------------------------------------------------");
-                    System.out.println("Id:" + details.getTransferId());
-                    System.out.println("From:" + details.getUserFrom());
-                    System.out.println("To:" + details.getUserTo());
-                    System.out.println("Type:" + details.getTransferType());
-                    System.out.println("Status:" + details.getTransferStatus());
-                    System.out.println("Amount:" + details.getTransferAmount());
+                    System.out.println("Id:  " + details.getTransferId());
+                    System.out.println("From:  " + details.getUserFrom());
+                    System.out.println("To:  " + details.getUserTo());
+                    System.out.println("Type:  " + details.getTransferType());
+                    System.out.println("Status:  " + details.getTransferStatus());
+                    System.out.println("Amount:  $" + details.getTransferAmount());
 
                 } else {
                     System.out.println("Transaction Id does not exist!");
