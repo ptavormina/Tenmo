@@ -44,10 +44,10 @@ public class TransferService {
 
                 if(user.getUser().getId() + 1000 == one.getAccountFrom()){
                     fOrT = "From: ";
-                    name = one.getUserFrom();
+                    name = one.getUserTo();
                 }else{
                     fOrT = "To: ";
-                    name = one.getUserTo();
+                    name = one.getUserFrom();
                 }
                 System.out.println(one.getTransferId() + "\t\t\t" + fOrT + user.getUser().getUsername() + "\t\t\t$ " + one.getTransferAmount());
             }
