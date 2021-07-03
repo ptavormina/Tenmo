@@ -32,7 +32,7 @@ public class TransferService {
         Transfer[] transfers = null;
         try{
             // TODO Should path be changed to user/{userId}/transfers??
-            transfers = restTemplate.exchange(baseUrl + "transfers/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+            transfers = restTemplate.exchange(baseUrl + "users/" + user.getUser().getId() + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
             System.out.println("---------------------------------------------------\n " +
                     "Transfers\n" +
                     "ID         From/To         Amount\n" +
