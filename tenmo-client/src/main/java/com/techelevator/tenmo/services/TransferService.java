@@ -53,7 +53,26 @@ public class TransferService {
                 }
                 System.out.println(one.getTransferId() + "\t\t\t" + fOrT + user.getUser().getUsername() + "\t\t\t$ " + one.getTransferAmount());
             }
-            System.out.println("Please enter the transfer Id to view details (0 to cancel) :");
+        }catch (RestClientResponseException e){
+            System.out.println("Could not find list of Transactions");
+        }
+        return transfers;
+    }
+
+    public Transfer transferDetails(){
+        Transfer transferDetails = new Transfer();
+        try{
+            //TODO this path be changed to user/{userId}/transfers/{transferId}
+            transferDetails = restTemplate.exchange(baseUrl + "transfers/" + transferDetails.getTransferId(), HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+            System.out.println("---------------------------------------------------\n" +
+                    "Transfer Details\n" +
+                    "---------------------------------------------------\n" +
+                    "Id:" + transferDetails.getTransferId() + "\n" +
+            "From:" + transferDetails.getUserFrom() + "\n" +
+            "To:" + transferDetails.getUserTo() + "\n" +
+            "Type:" + transferDetails.getTransferType() + "\n" +
+            "Status:" + transferDetails.getTransferStatus() + "\n" +
+            "Amount:" + transferDetails.getTransferAmount() + "\n");
 
         }catch (RestClientResponseException e){
             System.out.println("Could not find transaction.");
