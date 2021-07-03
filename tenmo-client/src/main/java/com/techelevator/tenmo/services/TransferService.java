@@ -32,76 +32,56 @@ public class TransferService {
 
     public Transfer[] listTransfers() {
         Transfer[] transfers = null;
-        try{
+        Scanner scanner = new Scanner(System.in);
+        Transfer transferDetails = null;
+        try {
             // TODO Should path be changed to user/{userId}/transfers??
             transfers = restTemplate.exchange(baseUrl + "users/" + user.getUser().getId() + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
             System.out.println("---------------------------------------------------\n " +
                     "Transfers\n" +
-                    "ID         From/To         Amount\n" +
+                    "  ID         From/To            Amount\n" +
                     "---------------------------------------------------");
             String fOrT = "";
             String name = "";
 
-            for(Transfer one : transfers){
+            for (Transfer one : transfers) {
 
-                if(user.getUser().getId() + 1000 == one.getAccountFrom()){
+                if (user.getUser().getId() + 1000 != one.getAccountFrom()) {
                     fOrT = "From: ";
-                    name = one.getUserTo();
-                }else{
-                    fOrT = "To: ";
                     name = one.getUserFrom();
+                } else {
+                    fOrT = "To: ";
+                    name = one.getUserTo();
                 }
-                System.out.println(one.getTransferId() + "\t\t\t" + fOrT + user.getUser().getUsername() + "\t\t\t$ " + one.getTransferAmount());
+                System.out.println(one.getTransferId() + "\t\t" + fOrT + name + "\t\t\t$ " + one.getTransferAmount());
             }
-        }catch (RestClientResponseException e){
+        } catch (RestClientResponseException e) {
             System.out.println("Could not find list of Transactions");
         }
-        return transfers;
-    }
+        System.out.println("Please enter transfer ID to view details (0 to cancel)");
+        String input = scanner.nextLine();
+        int transferId = Integer.parseInt(input);
+        if (transferId != 0) {
+            for (Transfer details : transfers) {
+                if (transferId == details.getTransferId()) {
+                    details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+                    System.out.println("---------------------------------------------------");
+                    System.out.println("Transfer Details");
+                    System.out.println("---------------------------------------------------");
+                    System.out.println("Id:" + details.getTransferId());
+                    System.out.println("From:" + details.getUserFrom());
+                    System.out.println("To:" + details.getUserTo());
+                    System.out.println("Type:" + details.getTransferType());
+                    System.out.println("Status:" + details.getTransferStatus());
+                    System.out.println("Amount:" + details.getTransferAmount());
 
-    public Transfer transferDetails(){
-        Transfer transferDetails = new Transfer();
-        try{
-            //TODO this path be changed to user/{userId}/transfers/{transferId}
-            transferDetails = restTemplate.exchange(baseUrl + "transfers/" + transferDetails.getTransferId(), HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
-            System.out.println("---------------------------------------------------\n" +
-                    "Transfer Details\n" +
-                    "---------------------------------------------------\n" +
-                    "Id:" + transferDetails.getTransferId() + "\n" +
-            "From:" + transferDetails.getUserFrom() + "\n" +
-            "To:" + transferDetails.getUserTo() + "\n" +
-            "Type:" + transferDetails.getTransferType() + "\n" +
-            "Status:" + transferDetails.getTransferStatus() + "\n" +
-            "Amount:" + transferDetails.getTransferAmount() + "\n");
-
-        }catch (RestClientResponseException e){
-            System.out.println("Could not find transaction.");
+                } else {
+                    System.out.println("Transaction Id does not exist!");
+                }
+            }
         }
         return transfers;
-
     }
-
-            /* String input = scanner.nextLine();
-            int transferId = Integer.parseInt(input);
-            if (transferId == 0) {
-                for(Transfer details : transfers){
-                    if(transferId == details.getTransferId()){
-                        transferDetails = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
-                        System.out.println("---------------------------------------------------");
-                        System.out.println("Transfer Details");
-                        System.out.println("---------------------------------------------------");
-                        System.out.println("Id:" + transferDetails.getTransferId());
-                        System.out.println("From:" + transferDetails.getUserFrom());
-                        System.out.println("To:" + transferDetails.getUserTo());
-                        System.out.println("Type:" + transferDetails.getTransferType());
-                        System.out.println("Status:" + transferDetails.getTransferStatus());
-                        System.out.println("Amount:" + transferDetails.getTransferAmount());
-
-                    }else{
-                        System.out.println("Transaction Id does not exist!");
-                    }
-            }
-        }*/
 
 
 

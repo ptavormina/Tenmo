@@ -25,18 +25,19 @@ public class Transfer {
     private String userTo;
 
 
-//    public Transfer(int transferId, int statusId, int typeId, int accountFrom, int accountTo, BigDecimal transferAmount) {
-//        this.transferId = transferId;
-//        this.statusId = statusId;
-//        this.typeId = typeId;
-//        this.accountFrom = accountFrom;
-//        this.accountTo = accountTo;
-//        this.transferAmount = transferAmount;
-//    }
-//
-//    public Transfer() {
-//
-//    }
+    public Transfer(int transferId, int statusId, int typeId, int accountFrom, int accountTo, BigDecimal transferAmount) {
+        this.transferId = transferId;
+        this.statusId = statusId;
+        this.typeId = typeId;
+        this.accountFrom = accountFrom;
+        this.accountTo = accountTo;
+        this.transferAmount = transferAmount;
+
+    }
+
+    public Transfer() {
+
+   }
 
     public String getTransferType() {
         return transferType;
