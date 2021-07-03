@@ -114,7 +114,7 @@ public class TransferService {
                         System.out.println();
                         sendTransfer();
                     }
-                    if (transferAmount > 0) {
+                if (transferAmount > 0) {
                         BigDecimal transferAmount1 = new BigDecimal(transferAmount);
                         transfer.setTransferAmount(transferAmount1);
                     }
