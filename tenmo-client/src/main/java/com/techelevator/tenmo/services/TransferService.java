@@ -56,6 +56,7 @@ public class TransferService {
         }
         return transfers;
     }
+
     public Transfer transferDetails(){
         Transfer transferDetails = new Transfer();
         try{
