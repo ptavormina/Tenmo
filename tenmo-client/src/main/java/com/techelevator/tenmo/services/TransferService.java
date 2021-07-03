@@ -55,48 +55,6 @@ public class TransferService {
         } catch (RestClientResponseException e) {
             System.out.println("Could not find list of Transactions");
         }
-
-        //Possibly split this into separate helper method?
-
-//        System.out.println("Please enter transfer ID to view details (0 to cancel)");
-//        String input = scanner.nextLine();
-//        int transferId = Integer.parseInt(input);
-//        boolean validId = false;
-//        if (transferId != 0) {
-//            for (Transfer details : transfers) {
-//                if (transferId == details.getTransferId()) {
-//                    validId = true;
-//                    details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
-//
-//                    //before printing the transfer details, gonna decode the type id and status id:
-//                    String transferType = "";
-//                    transferType = details.getTypeId() == 1 ? "Request" : "Send";
-//                    String transferStatus = "";
-//                    if (details.getStatusId() == 1) {
-//                        transferStatus = "Pending";
-//                    }
-//                    if (details.getStatusId() == 2) {
-//                        transferStatus = "Accepted";
-//                    }
-//                    if (details.getStatusId() == 3) {
-//                        transferStatus = "Rejected";
-//                    }
-//
-//                    System.out.println("---------------------------------------------------");
-//                    System.out.println("Transfer Details");
-//                    System.out.println("---------------------------------------------------");
-//                    System.out.println("Id:      " + details.getTransferId());
-//                    System.out.println("From:    " + details.getUserFrom());
-//                    System.out.println("To:      " + details.getUserTo());
-//                    System.out.println("Type:    " + transferType);
-//                    System.out.println("Status:  " + transferStatus);
-//                    System.out.println("Amount:  $" + details.getTransferAmount());
-//                }
-//            }
-//            if (!validId) {
-//                System.out.println("\n Transaction Id does not exist!");
-//            }
-//        }
         listTransferDetails();
         return transfers;
     }
@@ -107,6 +65,7 @@ public class TransferService {
         System.out.println("Please enter transfer ID to view details (0 to cancel)");
         String input = scanner.nextLine();
         int transferId = Integer.parseInt(input);
+
         if (transferId == 0) {
             return;
         }
@@ -129,6 +88,7 @@ public class TransferService {
         if (details.getStatusId() == 3) {
             transferStatus = "Rejected";
         }
+
         System.out.println("---------------------------------------------------");
         System.out.println("Transfer Details");
         System.out.println("---------------------------------------------------");
@@ -139,15 +99,6 @@ public class TransferService {
         System.out.println("Status:  " + transferStatus);
         System.out.println("Amount:  $" + details.getTransferAmount());
     }
-
-
-
-
-
-
-
-
-
 
     public void sendTransfer() {
         Transfer transfer = new Transfer();
