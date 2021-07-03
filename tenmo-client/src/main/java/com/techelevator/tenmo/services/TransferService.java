@@ -67,15 +67,24 @@ public class TransferService {
                 if (transferId == details.getTransferId()) {
                     validId = true;
                     details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+
+                    //before printing the transfer details, gonna decode the type id and status id:
+                    String transferType = "";
+                    transferType = details.getTypeId() == 1 ? "Request" : "Send";
+                    String transferStatus = "";
+                    if (details.getStatusId() == 1) {transferStatus = "Pending";}
+                    if (details.getStatusId() == 2) {transferStatus = "Accepted";}
+                    if (details.getStatusId() == 3) {transferStatus = "Rejected";}
+
                     System.out.println("---------------------------------------------------");
                     System.out.println("Transfer Details");
                     System.out.println("---------------------------------------------------");
                     System.out.println("Id:      " + details.getTransferId());
                     System.out.println("From:    " + details.getUserFrom());
                     System.out.println("To:      " + details.getUserTo());
-                    System.out.println("Type:    " + details.getTransferType());
-                    System.out.println("Status:  " + details.getTransferStatus());
-                    System.out.println("Amount:   $" + details.getTransferAmount());
+                    System.out.println("Type:    " + transferType);
+                    System.out.println("Status:  " + transferStatus);
+                    System.out.println("Amount:  $" + details.getTransferAmount());
                 }
             }
             if (!validId) {
