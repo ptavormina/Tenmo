@@ -20,7 +20,7 @@ public class TransferController {
     }
 
 
-    @RequestMapping(path = "transfers/{userId}", method = RequestMethod.GET)
+    @RequestMapping(path = "users/{userId}/transfers", method = RequestMethod.GET)
     public List<Transfer> transfers(@PathVariable int userId){
         return transferDao.listTransfersByUserId(userId);
     }
