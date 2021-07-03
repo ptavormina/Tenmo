@@ -37,14 +37,16 @@ public class TransferService {
                     "Transfers\n" +
                     "ID         From/To         Amount\n" +
                     "---------------------------------------------------");
+            String fOrT = "";
+            String name = "";
+
             for(Transfer one : transfers){
-                String fOrT = "";
-                String name = "";
-                if(user.getUser().getId() == one.getAccountFrom()){
-                    fOrT = "From:";
+
+                if(user.getUser().getId() + 1000 == one.getAccountFrom()){
+                    fOrT = "From: ";
                     name = one.getUserFrom();
                 }else{
-                    fOrT = "To:";
+                    fOrT = "To: ";
                     name = one.getUserTo();
                 }
                 System.out.println(one.getTransferId() + "\t\t\t" + fOrT + user.getUser().getUsername() + "\t\t\t$ " + one.getTransferAmount());

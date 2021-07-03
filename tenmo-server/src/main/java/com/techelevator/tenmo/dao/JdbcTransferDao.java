@@ -91,8 +91,8 @@ public class JdbcTransferDao implements TransferDao{
 
 //        t.setTransferStatus(rowSet.getString("transfer_status_desc"));
 //        t.setTransferType(rowSet.getString("transfer_type_desc"));
-//        t.setUserFrom(rowSet.getString("userFrom"));
-//        t.setUserTo(rowSet.getString("userTo"));
+        t.setUserFrom(rowSet.getString("userFrom"));
+        t.setUserTo(rowSet.getString("userTo"));
         return t;
     }
 }
