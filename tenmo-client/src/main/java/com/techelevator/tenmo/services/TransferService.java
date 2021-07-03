@@ -35,7 +35,6 @@ public class TransferService {
         Scanner scanner = new Scanner(System.in);
         Transfer transferDetails = null;
         try {
-            // TODO Should path be changed to user/{userId}/transfers??
             transfers = restTemplate.exchange(baseUrl + "users/" + user.getUser().getId() + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
             System.out.println("---------------------------------------------------\n " +
                     "Transfers\n" +
@@ -45,7 +44,6 @@ public class TransferService {
             String name = "";
 
             for (Transfer one : transfers) {
-
                 if (user.getUser().getId() + 1000 != one.getAccountFrom()) {
                     fOrT = "From: ";
                     name = one.getUserFrom();
@@ -58,26 +56,30 @@ public class TransferService {
         } catch (RestClientResponseException e) {
             System.out.println("Could not find list of Transactions");
         }
+
+        //Possibly split this into separate helper method?
         System.out.println("Please enter transfer ID to view details (0 to cancel)");
         String input = scanner.nextLine();
         int transferId = Integer.parseInt(input);
+        boolean validId = false;
         if (transferId != 0) {
             for (Transfer details : transfers) {
                 if (transferId == details.getTransferId()) {
+                    validId = true;
                     details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
                     System.out.println("---------------------------------------------------");
                     System.out.println("Transfer Details");
                     System.out.println("---------------------------------------------------");
-                    System.out.println("Id:  " + details.getTransferId());
-                    System.out.println("From:  " + details.getUserFrom());
-                    System.out.println("To:  " + details.getUserTo());
-                    System.out.println("Type:  " + details.getTransferType());
+                    System.out.println("Id:      " + details.getTransferId());
+                    System.out.println("From:    " + details.getUserFrom());
+                    System.out.println("To:      " + details.getUserTo());
+                    System.out.println("Type:    " + details.getTransferType());
                     System.out.println("Status:  " + details.getTransferStatus());
-                    System.out.println("Amount:  $" + details.getTransferAmount());
-
-                } else {
-                    System.out.println("Transaction Id does not exist!");
+                    System.out.println("Amount:   $" + details.getTransferAmount());
                 }
+            }
+            if (!validId) {
+                System.out.println("\n Transaction Id does not exist!");
             }
         }
         return transfers;
