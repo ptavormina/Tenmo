@@ -25,7 +25,7 @@ public class TransferService {
     private RestTemplate restTemplate = new RestTemplate();
     private AuthenticatedUser user;
 
-    public TransferService(String baseUrl, AuthenticatedUser user){
+    public TransferService(String baseUrl, AuthenticatedUser user) {
         this.baseUrl = baseUrl;
         this.user = user;
     }
@@ -33,9 +33,7 @@ public class TransferService {
     public Transfer[] listTransfers() {
         Transfer[] transfers = null;
         Scanner scanner = new Scanner(System.in);
-        Transfer transferDetails = null;
         try {
-            // TODO Should path be changed to user/{userId}/transfers??
             transfers = restTemplate.exchange(baseUrl + "users/" + user.getUser().getId() + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
             System.out.println("---------------------------------------------------\n " +
                     "Transfers\n" +
@@ -45,7 +43,6 @@ public class TransferService {
             String name = "";
 
             for (Transfer one : transfers) {
-
                 if (user.getUser().getId() + 1000 != one.getAccountFrom()) {
                     fOrT = "From: ";
                     name = one.getUserFrom();
@@ -58,32 +55,50 @@ public class TransferService {
         } catch (RestClientResponseException e) {
             System.out.println("Could not find list of Transactions");
         }
-        System.out.println("Please enter transfer ID to view details (0 to cancel)");
-        String input = scanner.nextLine();
-        int transferId = Integer.parseInt(input);
-        if (transferId != 0) {
-            for (Transfer details : transfers) {
-                if (transferId == details.getTransferId()) {
-                    details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
-                    System.out.println("---------------------------------------------------");
-                    System.out.println("Transfer Details");
-                    System.out.println("---------------------------------------------------");
-                    System.out.println("Id:  " + details.getTransferId());
-                    System.out.println("From:  " + details.getUserFrom());
-                    System.out.println("To:  " + details.getUserTo());
-                    System.out.println("Type:  " + details.getTransferType());
-                    System.out.println("Status:  " + details.getTransferStatus());
-                    System.out.println("Amount:  $" + details.getTransferAmount());
-
-                } else {
-                    System.out.println("Transaction Id does not exist!");
-                }
-            }
-        }
+        listTransferDetails();
         return transfers;
     }
 
+    public void listTransferDetails() {
+        Transfer details = null;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter transfer ID to view details (0 to cancel)");
+        String input = scanner.nextLine();
+        int transferId = Integer.parseInt(input);
 
+        if (transferId == 0) {
+            return;
+        }
+        try {
+            details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+        } catch (Exception e) {
+            System.out.println("Invalid transfer ID you big dumb idiot!!!!!");
+        }
+
+        //before printing the transfer details, gonna decode the type id and status id:
+        String transferType = "";
+        transferType = details.getTypeId() == 1 ? "Request" : "Send";
+        String transferStatus = "";
+        if (details.getStatusId() == 1) {
+            transferStatus = "Pending";
+        }
+        if (details.getStatusId() == 2) {
+            transferStatus = "Accepted";
+        }
+        if (details.getStatusId() == 3) {
+            transferStatus = "Rejected";
+        }
+
+        System.out.println("---------------------------------------------------");
+        System.out.println("Transfer Details");
+        System.out.println("---------------------------------------------------");
+        System.out.println("Id:      " + details.getTransferId());
+        System.out.println("From:    " + details.getUserFrom());
+        System.out.println("To:      " + details.getUserTo());
+        System.out.println("Type:    " + transferType);
+        System.out.println("Status:  " + transferStatus);
+        System.out.println("Amount:  $" + details.getTransferAmount());
+    }
 
     public void sendTransfer() {
         Transfer transfer = new Transfer();
