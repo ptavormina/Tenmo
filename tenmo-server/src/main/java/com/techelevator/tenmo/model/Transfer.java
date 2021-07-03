@@ -24,7 +24,7 @@ public class Transfer {
     private String userFrom;
     private String userTo;
 
-//
+
 //    public Transfer(int transferId, int statusId, int typeId, int accountFrom, int accountTo, BigDecimal transferAmount) {
 //        this.transferId = transferId;
 //        this.statusId = statusId;

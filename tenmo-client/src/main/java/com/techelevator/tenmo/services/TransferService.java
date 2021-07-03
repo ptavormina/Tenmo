@@ -32,22 +32,23 @@ public class TransferService {
 
     public Transfer[] listTransfers() {
         Transfer[] transfers = null;
-        Scanner scanner = new Scanner(System.in);
-        Transfer transferDetails = null;
-        try {
-            transfers = restTemplate.exchange(baseUrl + "transfers/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
-            System.out.println("---------------------------------------------------\n");
-            System.out.println("Transfer");
-            System.out.println("ID         From/To         Amount");
-            System.out.println("---------------------------------------------------");
-            for (Transfer one : transfers) {
-                String fOrT = "";
-                String name = "";
-                if (user.getUser().getId() == one.getAccountFrom()) {
-                    fOrT = "From:";
-                    name = one.getUserFrom();
-                } else {
-                    fOrT = "To:";
+        try{
+            // TODO Should path be changed to user/{userId}/transfers??
+            transfers = restTemplate.exchange(baseUrl + "users/" + user.getUser().getId() + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+            System.out.println("---------------------------------------------------\n " +
+                    "Transfers\n" +
+                    "ID         From/To         Amount\n" +
+                    "---------------------------------------------------");
+            String fOrT = "";
+            String name = "";
+
+            for(Transfer one : transfers){
+
+                if(user.getUser().getId() + 1000 == one.getAccountFrom()){
+                    fOrT = "From: ";
+                    name = one.getUserTo();
+                }else{
+                    fOrT = "To: ";
                     name = one.getUserFrom();
                 }
                 System.out.println(one.getTransferId() + "\t\t\t" + fOrT + user.getUser().getUsername() + "\t\t\t$ " + one.getTransferAmount());
@@ -120,7 +121,7 @@ public class TransferService {
                         System.out.println();
                         sendTransfer();
                     }
-                    if (transferAmount > 0) {
+                if (transferAmount > 0) {
                         BigDecimal transferAmount1 = new BigDecimal(transferAmount);
                         transfer.setTransferAmount(transferAmount1);
                     }

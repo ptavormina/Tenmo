@@ -26,12 +26,12 @@ public class JdbcTransferDao implements TransferDao{
     @Override
     public List<Transfer> listTransfersByUserId(int userId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT transfers.*. f.username AS userFrom, t.username AS userTo FROM transfers " +
+        String sql = "SELECT transfers.*, f.username AS userFrom, t.username AS userTo FROM transfers " +
                 "JOIN accounts a ON transfers.account_from = a.account_id " +
                 "JOIN accounts b ON transfers.account_to = b.account_id " +
                 "JOIN users f ON a.user_id = f.user_id " +
                 "JOIN users t ON b.user_id = t.user_id " +
-                "WHERE a.userId = ? OR b.userId = ?;";
+                "WHERE a.user_id = ? OR b.user_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, userId);
         while(results.next()){
             Transfer transfer = mapRowToTransfer(results);
@@ -89,8 +89,8 @@ public class JdbcTransferDao implements TransferDao{
         t.setAccountTo(rowSet.getInt("account_to"));
         t.setTransferAmount(rowSet.getBigDecimal("amount"));
 
-        t.setTransferStatus(rowSet.getString("transfer_status_desc"));
-        t.setTransferType(rowSet.getString("transfer_type_desc"));
+//        t.setTransferStatus(rowSet.getString("transfer_status_desc"));
+//        t.setTransferType(rowSet.getString("transfer_type_desc"));
         t.setUserFrom(rowSet.getString("userFrom"));
         t.setUserTo(rowSet.getString("userTo"));
         return t;
