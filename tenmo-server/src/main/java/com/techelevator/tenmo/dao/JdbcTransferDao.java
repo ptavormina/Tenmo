@@ -83,6 +83,25 @@ public class JdbcTransferDao implements TransferDao{
 
     }
 
+    @Override
+    public String updateRequestStatus(Transfer request, int statusId) throws AccountNotFoundException {
+        if (statusId == 3) {
+            String sql = "UPDATE transfers SET transfer_status_id = ? WHERE transfer_id = ?;";
+            jdbcTemplate.update(sql, statusId, request.getTransferId());
+            return "Request successfully rejected.";
+        }
+
+        if (statusId == 2) {
+            String sql = "UPDATE transfers SET transfer_status_id = ? WHERE transfer_id = ?;";
+            jdbcTemplate.update(sql, statusId, request.getTransferId());
+            accountDao.addFunds(request.getTransferAmount(), request.getAccountFrom());
+            accountDao.subtractFunds(request.getTransferAmount(), request.getAccountTo());
+            return "Request completed.";
+        } else {
+            return "Unforeseen error, sorry!";
+        }
+    }
+
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet){
         Transfer t = new Transfer();

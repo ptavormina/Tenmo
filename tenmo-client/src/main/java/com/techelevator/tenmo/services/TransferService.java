@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.zip.DataFormatException;
 
 public class TransferService {
     private String baseUrl;
@@ -72,7 +73,8 @@ public class TransferService {
         try {
             details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
         } catch (Exception e) {
-            System.out.println("Invalid transfer ID");
+            System.out.println("Invalid transfer ID, try again");
+            listTransfers();
         }
 
         //before printing the transfer details, gonna decode the type id and status id:
@@ -98,13 +100,13 @@ public class TransferService {
         System.out.println("Type:    " + transferType);
         System.out.println("Status:  " + transferStatus);
         System.out.println("Amount:  $" + details.getTransferAmount());
+        return;
     }
 
     public void sendTransfer() {
         Transfer transfer = new Transfer();
         listOtherUsers();
         Scanner scanner = new Scanner(System.in);
-        BigDecimal currentBalance = restTemplate.exchange(baseUrl + "balance/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
         System.out.println("Enter the ID of the User you're sending to, or enter 0 to cancel:");
         String response = scanner.nextLine();
         int recipientId = Integer.parseInt(response);
@@ -130,7 +132,7 @@ public class TransferService {
                     System.out.println();
                     sendTransfer();
                 }
-                if (transferAmount > Double.parseDouble(String.valueOf(currentBalance))) {
+                if (transferAmount > getCurrentBalanceAsDouble()) {
                     System.out.println("Unlike real banks, you're not allowed to spend more than you have here.");
                     return;
                 }
@@ -241,32 +243,7 @@ public class TransferService {
                 for (Transfer request : pendingRequests) {
                     System.out.println(request.getTransferId() + "\t\t\t" + request.getUserFrom() + "\t\t\t" + request.getTransferAmount());
                 }
-                System.out.println("---------");
-                Scanner scanner = new Scanner(System.in);
-                System.out.println("Please enter transfer ID to approve or reject (0 to cancel)");
-                String userInput = scanner.nextLine();
-                int pendingTransfer = Integer.parseInt(userInput);
-                if (pendingTransfer != 0){
-
-                for (Transfer pending : requests) {
-                    if (pendingTransfer == pending.getTransferId()) {
-                        System.out.println("---------------------------------------------------\n " +
-                                "Pending      Transfers\n" +
-                                " ID              To                 Amount\n" +
-                                "---------------------------------------------------");
-                        System.out.println(pending.getTransferId() + "\t\t\t" + pending.getUserFrom() + "\t\t\t" + pending.getTransferAmount());
-                        System.out.println("----------------------------------");
-                        System.out.println("1: Approve");
-                        System.out.println("2: Reject");
-                        System.out.println("0: Exit Menu");
-                        System.out.println("-----------");
-                        System.out.println("Please choose and option:");
-
-                    }
-                }
-                }
-
-
+                processRequests(pendingRequests);
             } else {
                 System.out.println("No pending requests.");
             }
@@ -305,6 +282,85 @@ public class TransferService {
         if (status == 1) {
             transferStatusName = "Pending";
         }
+    }
+
+    public void processRequests(List<Transfer> pendingRequests) {
+        System.out.println("---------");
+        System.out.println("Please enter request ID to approve or reject (0 to cancel)");
+        int requestId = 0;
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+
+        try {
+            requestId = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input type.");
+            processRequests(pendingRequests);
+        }
+
+        if (requestId == 0) {
+            return;
+        }
+
+        Transfer chosenRequest = null;
+        for (Transfer pendingRequest : pendingRequests) {
+            if (requestId == pendingRequest.getTransferId()) {
+                chosenRequest = pendingRequest;
+            }
+        }
+
+        if (chosenRequest == null) {
+            System.out.println("Could not find transfer with that ID. Please try again.");
+            processRequests(pendingRequests);
+        }
+
+        System.out.println("----------------------------------");
+        System.out.println("1: Approve");
+        System.out.println("2: Reject");
+        System.out.println("0: Exit Menu");
+        System.out.println("-----------");
+        System.out.println("Please choose an option:");
+        String choice = scanner.nextLine();
+        int menuChoice = -1;
+
+        try {
+            menuChoice = Integer.parseInt(choice);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input type.");
+            processRequests(pendingRequests);
+        }
+
+        if (menuChoice == 0) {
+            System.out.println("Okay, but don't forget to pay your friend later!");
+            return;
+        } else if (menuChoice == 1) {
+            approveRequest(chosenRequest);
+        } else if (menuChoice == 2) {
+            declineRequest(chosenRequest);
+        } else {
+            System.out.println("Invalid choice.");
+            processRequests(pendingRequests);
+        }
+    }
+
+    public void approveRequest(Transfer request) {
+        double currentBalance = getCurrentBalanceAsDouble();
+        if (Double.parseDouble(String.valueOf(request.getTransferAmount())) > currentBalance) {
+            System.out.println("Insufficient funds to complete request.");
+            viewRequests();
+        } else {
+            restTemplate.exchange(baseUrl + "transfers/requests/2", HttpMethod.PUT, transferHttpEntity(request), String.class).getBody();
+            System.out.println("Request approved!");
+        }
+    }
+
+    public void declineRequest(Transfer request) {
+        restTemplate.exchange(baseUrl + "transfers/requests/3", HttpMethod.PUT, transferHttpEntity(request), String.class).getBody();
+        System.out.println("Request declined.");
+    }
+
+    public double getCurrentBalanceAsDouble() {
+        return Double.parseDouble(String.valueOf(restTemplate.exchange(baseUrl + "balance/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody()));
     }
 
     private HttpEntity<Transfer> transferHttpEntity(Transfer transfer){

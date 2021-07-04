@@ -84,13 +84,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewTransferHistory() {
 		TransferService transferService = new TransferService(API_BASE_URL, currentUser);
-		try{
-			transferService.listTransfers();
-		}catch (NullPointerException e){
-			System.out.println("List of accounts could not be accessed.");
-		}
-
-		
+		transferService.listTransfers();
 	}
 
 	private void viewPendingRequests() {
