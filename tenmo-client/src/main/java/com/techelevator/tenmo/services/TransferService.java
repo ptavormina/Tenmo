@@ -104,7 +104,6 @@ public class TransferService {
         listOtherUsers();
         Scanner scanner = new Scanner(System.in);
         BigDecimal currentBalance = restTemplate.exchange(baseUrl + "balance/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
-        System.out.println(Double.parseDouble(String.valueOf(currentBalance)));
         System.out.println("Enter the ID of the User you're sending to, or enter 0 to cancel:");
         String response = scanner.nextLine();
         int recipientId = Integer.parseInt(response);
@@ -132,7 +131,7 @@ public class TransferService {
                 }
                 if (transferAmount > Double.parseDouble(String.valueOf(currentBalance))) {
                     System.out.println("Unlike real banks, you're not allowed to spend more than you have here.");
-                    sendTransfer();
+                    return;
                 }
                 if (transferAmount > 0) {
                         BigDecimal transferAmount1 = new BigDecimal(transferAmount);
