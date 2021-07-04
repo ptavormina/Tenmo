@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.zip.DataFormatException;
 
 public class TransferService {
     private String baseUrl;
@@ -241,9 +242,7 @@ public class TransferService {
                 for (Transfer request : pendingRequests) {
                     System.out.println(request.getTransferId() + "\t\t\t" + request.getUserFrom() + "\t\t\t" + request.getTransferAmount());
                 }
-                System.out.println("---------");
-                System.out.println("Please enter transfer ID to approve or reject (0 to cancel)");
-                //
+                processRequests(pendingRequests);
             } else {
                 System.out.println("No pending requests.");
             }
@@ -252,6 +251,73 @@ public class TransferService {
             System.out.println("Unable to find any pending requests.");
         }
         return pendingRequests;
+    }
+
+    public void processRequests(List<Transfer> pendingRequests) {
+        System.out.println("---------");
+        System.out.println("Please enter request ID to approve or reject (0 to cancel)");
+        int requestId = 0;
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+
+        try {
+            requestId = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input type.");
+            processRequests(pendingRequests);
+        }
+
+        if (requestId == 0) {
+            return;
+        }
+
+        Transfer chosenRequest = null;
+        for (Transfer pendingRequest : pendingRequests) {
+            if (requestId == pendingRequest.getTransferId()) {
+                chosenRequest = pendingRequest;
+            }
+        }
+
+        if (chosenRequest == null) {
+            System.out.println("Could not find transfer with that ID. Please try again.");
+            processRequests(pendingRequests);
+        }
+
+        System.out.println("----------------------------------");
+        System.out.println("1: Approve");
+        System.out.println("2: Reject");
+        System.out.println("0: Exit Menu");
+        System.out.println("-----------");
+        System.out.println("Please choose an option:");
+        String choice = scanner.nextLine();
+        int menuChoice = -1;
+
+        try {
+            menuChoice = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input type.");
+            processRequests(pendingRequests);
+        }
+
+        if (menuChoice == 0) {
+            System.out.println("Okay, but don't forget to pay your friend later!");
+            return;
+        } else if (menuChoice == 1) {
+            approveRequest(chosenRequest);
+        } else if (menuChoice == 2) {
+            declineRequest(chosenRequest);
+        } else {
+            System.out.println("Invalid choice.");
+            processRequests(pendingRequests);
+        }
+    }
+
+    public void approveRequest(Transfer request) {
+
+    }
+
+    public void declineRequest(Transfer request) {
+
     }
 
     private HttpEntity<Transfer> transferHttpEntity(Transfer transfer){
