@@ -200,7 +200,7 @@ public class TransferService {
             if (requestAmount <= 0) {
                 System.out.println("Requests must be greater than 0");
                 System.out.println();
-                sendTransfer();
+                giveMeMoney();
             }
             if (requestAmount > 0) {
                 BigDecimal requestAmount1 = new BigDecimal(requestAmount);
@@ -208,7 +208,7 @@ public class TransferService {
             }
         } catch (Exception e) {
             System.out.println("Invalid input, please try again.");
-            sendTransfer();
+            giveMeMoney();
         }
         try {
             restTemplate.exchange(baseUrl + "transfers/requests", HttpMethod.POST, transferHttpEntity(transferRequest), String.class).getBody();
@@ -216,10 +216,64 @@ public class TransferService {
             System.out.println("-------------------------------------------");
         } catch (Exception e) {
             System.out.println("Invalid user ID, please try again.");
-            sendTransfer();
+            giveMeMoney();
         }
+    }
 
+//    private Transfer[] viewRequests() {
+//        Transfer[] pendingRequests = null;
+//        try {
+//            pendingRequests = restTemplate.exchange(baseUrl + "users/" + user.getUser().getId() + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+//            System.out.println("---------------------------------------------------\n " +
+//                    "Pending Transfers\n" +
+//                    "  ID            To            Amount\n" +
+//                    "---------------------------------------------------");
+//            boolean userHasPendingRequests = false;
+//            for (Transfer request : pendingRequests) {
+//                if (request.getStatusId() == 1) {
+//                    userHasPendingRequests = true;
+//                    System.out.println(request.getTransferId() + "\t\t\t" + request.getAccountFrom() + "\t\t\t" + request.getTransferAmount());
+//                }
+//            }
+//            System.out.println("---------");
+//            System.out.println("Please enter transfer ID to approve or reject (0 to cancel)");
+//        } catch (Exception e) {
+//            System.out.println("Unable to find any pending requests.");
+//        }
+//        return pendingRequests;
+//    }
 
+    public List<Transfer> viewRequests() {
+        Transfer[] requests = null;
+        List<Transfer> pendingRequests = new ArrayList<>();
+        try {
+            requests = restTemplate.exchange(baseUrl + "users/" + user.getUser().getId() + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+            boolean userHasPendingRequests = false;
+            for (Transfer request : requests) {
+                if (request.getStatusId() == 1 && request.getAccountTo() == user.getUser().getId() + 1000) {
+                    pendingRequests.add(request);
+                    userHasPendingRequests = true;
+                }
+            }
+            //if the user has pending requests, display this menu
+            if (userHasPendingRequests) {
+                System.out.println("---------------------------------------------------\n " +
+                        "Pending Transfers\n" +
+                        "  ID            To            Amount\n" +
+                        "---------------------------------------------------");
+                for (Transfer request : pendingRequests) {
+                    System.out.println(request.getTransferId() + "\t\t\t" + request.getUserFrom() + "\t\t\t" + request.getTransferAmount());
+                }
+                System.out.println("---------");
+                System.out.println("Please enter transfer ID to approve or reject (0 to cancel)");
+            } else {
+                System.out.println("No pending requests.");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Unable to find any pending requests.");
+        }
+        return pendingRequests;
     }
 
     private HttpEntity<Transfer> transferHttpEntity(Transfer transfer){
