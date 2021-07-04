@@ -235,15 +235,38 @@ public class TransferService {
             //if the user has pending requests, display this menu
             if (userHasPendingRequests) {
                 System.out.println("---------------------------------------------------\n " +
-                        "Pending Transfers\n" +
+                        "Pending      Transfers\n" +
                         " ID              To                 Amount\n" +
                         "---------------------------------------------------");
                 for (Transfer request : pendingRequests) {
                     System.out.println(request.getTransferId() + "\t\t\t" + request.getUserFrom() + "\t\t\t" + request.getTransferAmount());
                 }
                 System.out.println("---------");
+                Scanner scanner = new Scanner(System.in);
                 System.out.println("Please enter transfer ID to approve or reject (0 to cancel)");
-                //
+                String userInput = scanner.nextLine();
+                int pendingTransfer = Integer.parseInt(userInput);
+                if (pendingTransfer != 0){
+
+                for (Transfer pending : requests) {
+                    if (pendingTransfer == pending.getTransferId()) {
+                        System.out.println("---------------------------------------------------\n " +
+                                "Pending      Transfers\n" +
+                                " ID              To                 Amount\n" +
+                                "---------------------------------------------------");
+                        System.out.println(pending.getTransferId() + "\t\t\t" + pending.getUserFrom() + "\t\t\t" + pending.getTransferAmount());
+                        System.out.println("----------------------------------");
+                        System.out.println("1: Approve");
+                        System.out.println("2: Reject");
+                        System.out.println("0: Exit Menu");
+                        System.out.println("-----------");
+                        System.out.println("Please choose and option:");
+
+                    }
+                }
+                }
+
+
             } else {
                 System.out.println("No pending requests.");
             }
@@ -252,6 +275,36 @@ public class TransferService {
             System.out.println("Unable to find any pending requests.");
         }
         return pendingRequests;
+    }
+    public Transfer updatePendingTransfer(){
+        Transfer [] transfers = null;
+        Scanner scanner = new Scanner(System.in);
+        String userInput = scanner.nextLine();
+        int pendingTransfer = Integer.parseInt(userInput);
+
+        if (pendingTransfer == 0){
+            return;
+        }
+        for (Transfer pending : transfers){
+            if(pendingTransfer == pending.getTransferId()){
+                System.out.println("----------------------------------");
+                System.out.println();
+            }
+        }
+
+
+
+        int status = Integer.parseInt(userInput);
+        String transferStatusName = "";
+        if(status == 3){
+            transferStatusName = "Rejected";
+        }
+        if (status == 2) {
+            transferStatusName = "Accepted";
+        }
+        if (status == 1) {
+            transferStatusName = "Pending";
+        }
     }
 
     private HttpEntity<Transfer> transferHttpEntity(Transfer transfer){

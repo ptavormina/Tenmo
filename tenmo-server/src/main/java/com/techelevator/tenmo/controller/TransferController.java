@@ -44,4 +44,9 @@ public class TransferController {
     public String requestTransfer(@RequestBody Transfer transfer) throws AccountNotFoundException {
         return transferDao.requestTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount());
     }
+
+    @RequestMapping(path = "transfers/requests/{pendingId}", method = RequestMethod.PUT)
+    public String updateRequestTransfer(@PathVariable int pendingId)
+        return transferDao.
+    }
 }
