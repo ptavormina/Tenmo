@@ -71,7 +71,7 @@ public class TransferService {
         try {
             details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
         } catch (Exception e) {
-            System.out.println("Invalid transfer ID you big dumb idiot!!!!!");
+            System.out.println("Invalid transfer ID");
         }
 
         //before printing the transfer details, gonna decode the type id and status id:
@@ -103,6 +103,8 @@ public class TransferService {
         Transfer transfer = new Transfer();
         listOtherUsers();
         Scanner scanner = new Scanner(System.in);
+        BigDecimal currentBalance = restTemplate.exchange(baseUrl + "balance/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
+        System.out.println(Double.parseDouble(String.valueOf(currentBalance)));
         System.out.println("Enter the ID of the User you're sending to, or enter 0 to cancel:");
         String response = scanner.nextLine();
         int recipientId = Integer.parseInt(response);
@@ -128,6 +130,10 @@ public class TransferService {
                     System.out.println();
                     sendTransfer();
                 }
+                if (transferAmount > Double.parseDouble(String.valueOf(currentBalance))) {
+                    System.out.println("Unlike real banks, you're not allowed to spend more than you have here.");
+                    sendTransfer();
+                }
                 if (transferAmount > 0) {
                         BigDecimal transferAmount1 = new BigDecimal(transferAmount);
                         transfer.setTransferAmount(transferAmount1);
@@ -137,7 +143,7 @@ public class TransferService {
                     sendTransfer();
                 }
                 try {
-                    restTemplate.exchange(baseUrl + "requests", HttpMethod.POST, transferHttpEntity(transfer), String.class).getBody();
+                    restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, transferHttpEntity(transfer), String.class).getBody();
                     System.out.println("Transfer successful.");
                     System.out.println("-------------------------------------------");
                 } catch (Exception e) {
@@ -168,7 +174,7 @@ public class TransferService {
     }
 
     public void giveMeMoney() {
-        Transfer transferRequest = null;
+        Transfer transferRequest = new Transfer();
         listOtherUsers();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the ID of the User you're requesting, or enter 0 to cancel:");
@@ -202,6 +208,14 @@ public class TransferService {
             }
         } catch (Exception e) {
             System.out.println("Invalid input, please try again.");
+            sendTransfer();
+        }
+        try {
+            restTemplate.exchange(baseUrl + "transfers/requests", HttpMethod.POST, transferHttpEntity(transferRequest), String.class).getBody();
+            System.out.println("Request sent successfully.");
+            System.out.println("-------------------------------------------");
+        } catch (Exception e) {
+            System.out.println("Invalid user ID, please try again.");
             sendTransfer();
         }
 

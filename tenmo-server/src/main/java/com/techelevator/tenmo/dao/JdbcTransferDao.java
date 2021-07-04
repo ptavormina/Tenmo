@@ -83,7 +83,7 @@ public class JdbcTransferDao implements TransferDao{
     public String requestTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
         String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(1, 1, ?, ?, ?);";
         jdbcTemplate.update(sql, accountFrom, accountTo, transferAmount);
-        System.out.println("Account to: " + accountTo + " Account from: " + accountFrom);
+        System.out.println("Blah blah blah");
         return "Transfer request sent!";
     }
 
