@@ -313,11 +313,17 @@ public class TransferService {
     }
 
     public void approveRequest(Transfer request) {
-
+        BigDecimal currentBalance = restTemplate.exchange(baseUrl + "balance/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
+        if (Double.parseDouble(String.valueOf(request.getTransferAmount())) > Double.parseDouble(String.valueOf(currentBalance))) {
+            System.out.println("Insufficient funds to complete request.");
+            viewRequests();
+        } else {
+            restTemplate.exchange(baseUrl + "transfers/requests/2", HttpMethod.PUT, transferHttpEntity(request), String.class).getBody();
+        }
     }
 
     public void declineRequest(Transfer request) {
-
+        restTemplate.exchange(baseUrl + "transfers/requests/3", HttpMethod.PUT, makeAuthEntity(), String.class).getBody();
     }
 
     private HttpEntity<Transfer> transferHttpEntity(Transfer transfer){

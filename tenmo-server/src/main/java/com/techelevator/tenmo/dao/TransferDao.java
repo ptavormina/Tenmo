@@ -17,4 +17,6 @@ public interface TransferDao {
 
     String requestTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException;
 
+    String updateRequestStatus(Transfer request, int statusId) throws AccountNotFoundException;
+
 }
