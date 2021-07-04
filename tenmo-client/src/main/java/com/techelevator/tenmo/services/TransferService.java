@@ -73,7 +73,8 @@ public class TransferService {
         try {
             details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
         } catch (Exception e) {
-            System.out.println("Invalid transfer ID");
+            System.out.println("Invalid transfer ID, try again");
+            listTransfers();
         }
 
         //before printing the transfer details, gonna decode the type id and status id:
@@ -99,13 +100,13 @@ public class TransferService {
         System.out.println("Type:    " + transferType);
         System.out.println("Status:  " + transferStatus);
         System.out.println("Amount:  $" + details.getTransferAmount());
+        return;
     }
 
     public void sendTransfer() {
         Transfer transfer = new Transfer();
         listOtherUsers();
         Scanner scanner = new Scanner(System.in);
-        BigDecimal currentBalance = restTemplate.exchange(baseUrl + "balance/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
         System.out.println("Enter the ID of the User you're sending to, or enter 0 to cancel:");
         String response = scanner.nextLine();
         int recipientId = Integer.parseInt(response);
@@ -131,7 +132,7 @@ public class TransferService {
                     System.out.println();
                     sendTransfer();
                 }
-                if (transferAmount > Double.parseDouble(String.valueOf(currentBalance))) {
+                if (transferAmount > getCurrentBalanceAsDouble()) {
                     System.out.println("Unlike real banks, you're not allowed to spend more than you have here.");
                     return;
                 }
@@ -313,17 +314,23 @@ public class TransferService {
     }
 
     public void approveRequest(Transfer request) {
-        BigDecimal currentBalance = restTemplate.exchange(baseUrl + "balance/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
-        if (Double.parseDouble(String.valueOf(request.getTransferAmount())) > Double.parseDouble(String.valueOf(currentBalance))) {
+        double currentBalance = getCurrentBalanceAsDouble();
+        if (Double.parseDouble(String.valueOf(request.getTransferAmount())) > currentBalance) {
             System.out.println("Insufficient funds to complete request.");
             viewRequests();
         } else {
             restTemplate.exchange(baseUrl + "transfers/requests/2", HttpMethod.PUT, transferHttpEntity(request), String.class).getBody();
+            System.out.println("Request approved!");
         }
     }
 
     public void declineRequest(Transfer request) {
         restTemplate.exchange(baseUrl + "transfers/requests/3", HttpMethod.PUT, transferHttpEntity(request), String.class).getBody();
+        System.out.println("Request declined.");
+    }
+
+    public double getCurrentBalanceAsDouble() {
+        return Double.parseDouble(String.valueOf(restTemplate.exchange(baseUrl + "balance/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody()));
     }
 
     private HttpEntity<Transfer> transferHttpEntity(Transfer transfer){
