@@ -32,7 +32,6 @@ public class TransferService {
 
     public Transfer[] listTransfers() {
         Transfer[] transfers = null;
-        Scanner scanner = new Scanner(System.in);
         try {
             transfers = restTemplate.exchange(baseUrl + "users/" + user.getUser().getId() + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
             System.out.println("---------------------------------------------------\n " +
@@ -72,7 +71,7 @@ public class TransferService {
         try {
             details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
         } catch (Exception e) {
-            System.out.println("Invalid transfer ID you big dumb idiot!!!!!");
+            System.out.println("Invalid transfer ID");
         }
 
         //before printing the transfer details, gonna decode the type id and status id:
@@ -102,9 +101,58 @@ public class TransferService {
 
     public void sendTransfer() {
         Transfer transfer = new Transfer();
-        User[] users = null;
+        listOtherUsers();
         Scanner scanner = new Scanner(System.in);
+        BigDecimal currentBalance = restTemplate.exchange(baseUrl + "balance/" + user.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
+        System.out.println("Enter the ID of the User you're sending to, or enter 0 to cancel:");
+        String response = scanner.nextLine();
+        int recipientId = Integer.parseInt(response);
 
+        if (recipientId == 0) {
+            return;
+        }
+
+        try {
+            transfer.setAccountFrom(user.getUser().getId() + 1000);
+            transfer.setAccountTo(recipientId + 1000);
+        } catch (Exception e) {
+            System.out.println("Invalid user");
+            return;
+        }
+
+        System.out.println("Enter amount:");
+            try {
+                String amountResponse = scanner.nextLine();
+                double transferAmount = Double.parseDouble(amountResponse);
+                if (transferAmount <= 0) {
+                    System.out.println("Transfers must be a positive, nonzero amount. Try again...");
+                    System.out.println();
+                    sendTransfer();
+                }
+                if (transferAmount > Double.parseDouble(String.valueOf(currentBalance))) {
+                    System.out.println("Unlike real banks, you're not allowed to spend more than you have here.");
+                    return;
+                }
+                if (transferAmount > 0) {
+                        BigDecimal transferAmount1 = new BigDecimal(transferAmount);
+                        transfer.setTransferAmount(transferAmount1);
+                    }
+                } catch (Exception e) {
+                    System.out.println("Invalid input, please try again.");
+                    sendTransfer();
+                }
+                try {
+                    restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, transferHttpEntity(transfer), String.class).getBody();
+                    System.out.println("Transfer successful.");
+                    System.out.println("-------------------------------------------");
+                } catch (Exception e) {
+                    System.out.println("Invalid user ID, please try again.");
+                    sendTransfer();
+                }
+    }
+
+    public User[] listOtherUsers() {
+        User[] users = null;
         try {
             users = restTemplate.exchange(baseUrl + "users", HttpMethod.GET, makeAuthEntity(), User[].class).getBody();
 
@@ -118,60 +166,92 @@ public class TransferService {
                     System.out.println(recipient.getId() + "\t" + recipient.getUsername());
                 }
             }
+        } catch (Exception e){
+            System.out.println("Unable to retrieve list of users. Sorry!");
+        }
+        return users;
+    }
 
-            System.out.println("Enter the ID of the User you're sending to, or enter 0 to cancel:");
-            String response = scanner.nextLine();
-            int recipientId = Integer.parseInt(response);
-            if (recipientId == 0) {
-                return;
-            }
+    public void giveMeMoney() {
+        Transfer transferRequest = new Transfer();
+        listOtherUsers();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the User you're requesting, or enter 0 to cancel:");
+        String idResponse = scanner.nextLine();
+        int recipientId = Integer.parseInt(idResponse);
 
-            transfer.setAccountFrom(user.getUser().getId() + 1000);
-            transfer.setAccountTo(recipientId + 1000);
-            System.out.println("Enter amount: ");
+        if (recipientId == 0) {
+             return;
+        }
 
-                try {
-                    String amountResponse = scanner.nextLine();
-                    double transferAmount = Double.parseDouble(amountResponse);
-                    if (transferAmount <= 0) {
-                        System.out.println("Transfers must be a positive, nonzero amount. Try again...");
-                        System.out.println();
-                        sendTransfer();
-                    }
-                if (transferAmount > 0) {
-                        BigDecimal transferAmount1 = new BigDecimal(transferAmount);
-                        transfer.setTransferAmount(transferAmount1);
-                    }
-                } catch (Exception e) {
-                    System.out.println("IDK dude");
-                }
-
-                restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, transferHttpEntity(transfer), String.class).getBody();
-                System.out.println("Transfer successful.");
-                System.out.println("-------------------------------------------");
-
+        try {
+            transferRequest.setAccountFrom(user.getUser().getId() + 1000);
+            transferRequest.setAccountTo(recipientId + 1000);
         } catch (Exception e) {
-            System.out.println("Invalid user ID");
+            System.out.println("Invalid user");
+            return;
+        }
+
+        System.out.println("Enter request amount:");
+        try {
+            String response = scanner.nextLine();
+            double requestAmount = Double.parseDouble(response);
+            if (requestAmount <= 0) {
+                System.out.println("Requests must be greater than 0");
+                System.out.println();
+                giveMeMoney();
+            }
+            if (requestAmount > 0) {
+                BigDecimal requestAmount1 = new BigDecimal(requestAmount);
+                transferRequest.setTransferAmount(requestAmount1);
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid input, please try again.");
+            giveMeMoney();
+        }
+        try {
+            restTemplate.exchange(baseUrl + "transfers/requests", HttpMethod.POST, transferHttpEntity(transferRequest), String.class).getBody();
+            System.out.println("Request sent successfully.");
+            System.out.println("-------------------------------------------");
+        } catch (Exception e) {
+            System.out.println("Invalid user ID, please try again.");
+            giveMeMoney();
         }
     }
 
-//    public User[] listAllUsers(){
-//        User[] users = null;
-//        try{
-//            users = restTemplate.getForObject(baseUrl + "users", User[].class);
-//            for (User recipient : users) {
-//                if (recipient.getId() != user.getUser().getId()) {
-//                    System.out.println(recipient.getId() + "\t" + recipient.getUsername());
-//                }
-//            }
-//        }catch (RestClientResponseException e){
-//            System.out.println("Your request could not be completed.");
-//        }
-//        return users;
-//    }
+    public List<Transfer> viewRequests() {
+        Transfer[] requests = null;
+        List<Transfer> pendingRequests = new ArrayList<>();
+        try {
+            requests = restTemplate.exchange(baseUrl + "users/" + user.getUser().getId() + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+            boolean userHasPendingRequests = false;
+            for (Transfer request : requests) {
+                if (request.getStatusId() == 1 && request.getAccountTo() == user.getUser().getId() + 1000) {
+                    pendingRequests.add(request);
+                    userHasPendingRequests = true;
+                }
+            }
+            //if the user has pending requests, display this menu
+            if (userHasPendingRequests) {
+                System.out.println("---------------------------------------------------\n " +
+                        "Pending Transfers\n" +
+                        " ID              To                 Amount\n" +
+                        "---------------------------------------------------");
+                for (Transfer request : pendingRequests) {
+                    System.out.println(request.getTransferId() + "\t\t\t" + request.getUserFrom() + "\t\t\t" + request.getTransferAmount());
+                }
+                System.out.println("---------");
+                System.out.println("Please enter transfer ID to approve or reject (0 to cancel)");
+                //
+            } else {
+                System.out.println("No pending requests.");
+            }
 
-
-
+        } catch (Exception e) {
+            System.out.println("Unable to find any pending requests.");
+        }
+        return pendingRequests;
+    }
 
     private HttpEntity<Transfer> transferHttpEntity(Transfer transfer){
         HttpHeaders headers = new HttpHeaders();
@@ -187,7 +267,5 @@ public class TransferService {
         HttpEntity entity = new HttpEntity(headers);
         return entity;
     }
-
-
 }
 

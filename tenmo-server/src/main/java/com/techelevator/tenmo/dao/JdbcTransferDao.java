@@ -69,15 +69,23 @@ public class JdbcTransferDao implements TransferDao{
 //        return "Success!";
 //    }
 
-        @Override
-        public String sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
-            String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?);";
-            jdbcTemplate.update(sql, accountFrom, accountTo, transferAmount);
-            System.out.println("Account to: " + accountTo + " Account from: " + accountFrom);
-            accountDao.addFunds(transferAmount, accountTo);
-            accountDao.subtractFunds(transferAmount, accountFrom);
-            return "success!";
-        }
+    @Override
+    public String sendTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
+        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(2, 2, ?, ?, ?);";
+        jdbcTemplate.update(sql, accountFrom, accountTo, transferAmount);
+        System.out.println("Account to: " + accountTo + " Account from: " + accountFrom);
+        accountDao.addFunds(transferAmount, accountTo);
+        accountDao.subtractFunds(transferAmount, accountFrom);
+        return "success!";
+    }
+
+    @Override
+    public String requestTransfer(int accountFrom, int accountTo, BigDecimal transferAmount) throws AccountNotFoundException {
+        String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(1, 1, ?, ?, ?);";
+        jdbcTemplate.update(sql, accountFrom, accountTo, transferAmount);
+        System.out.println("Blah blah blah");
+        return "Transfer request sent!";
+    }
 
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet){
