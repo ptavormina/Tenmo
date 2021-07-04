@@ -323,7 +323,7 @@ public class TransferService {
     }
 
     public void declineRequest(Transfer request) {
-        restTemplate.exchange(baseUrl + "transfers/requests/3", HttpMethod.PUT, makeAuthEntity(), String.class).getBody();
+        restTemplate.exchange(baseUrl + "transfers/requests/3", HttpMethod.PUT, transferHttpEntity(request), String.class).getBody();
     }
 
     private HttpEntity<Transfer> transferHttpEntity(Transfer transfer){
