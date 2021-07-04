@@ -21,18 +21,23 @@ public class TransferController {
 
 
     @RequestMapping(path = "users/{userId}/transfers", method = RequestMethod.GET)
-    public List<Transfer> transfers(@PathVariable int userId){
+    public List<Transfer> getUsersTransfers(@PathVariable int userId){
         return transferDao.listTransfersByUserId(userId);
     }
 
     @RequestMapping(path = "transfers/{transferId}", method = RequestMethod.GET)
-    public Transfer transfer(@PathVariable int transferId){
+    public Transfer getTransferById(@PathVariable int transferId){
         return transferDao.getTransferDetails(transferId);
     }
 
 
     @RequestMapping(path = "transfers", method = RequestMethod.POST)
     public String sendTransfer(@RequestBody Transfer transfer) throws AccountNotFoundException {
-      return transferDao.sendTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount());
+        return transferDao.sendTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount());
+    }
+
+    @RequestMapping(path = "requests", method = RequestMethod.POST)
+    public String requestTransfer(@RequestBody Transfer transfer) throws AccountNotFoundException {
+        return transferDao.requestTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount());
     }
 }
