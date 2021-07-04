@@ -24,6 +24,7 @@ public class TransferService {
     private String baseUrl;
     private RestTemplate restTemplate = new RestTemplate();
     private AuthenticatedUser user;
+    private Account account;
 
     public TransferService(String baseUrl, AuthenticatedUser user) {
         this.baseUrl = baseUrl;

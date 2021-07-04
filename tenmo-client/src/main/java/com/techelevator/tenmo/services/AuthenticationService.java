@@ -45,6 +45,7 @@ public class AuthenticationService {
 			ResponseEntity<AuthenticatedUser> response = restTemplate.exchange(baseUrl + "login", HttpMethod.POST, entity, AuthenticatedUser.class);
 			return response.getBody(); 
 		} catch(RestClientResponseException ex) {
+			//String message = "This username does not exist";
 			String message = createLoginExceptionMessage(ex);
 			throw new AuthenticationServiceException(message);
         }

@@ -4,6 +4,7 @@ import com.techelevator.tenmo.dao.JdbcTransferDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -12,6 +13,7 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 
+@PreAuthorize("isAuthenticated()")
 @RestController
 public class TransferController {
     private TransferDao transferDao;
@@ -31,7 +33,7 @@ public class TransferController {
         return transferDao.getTransferDetails(transferId);
     }
 
-
+    @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "transfers", method = RequestMethod.POST)
     public String sendTransfer(@RequestBody Transfer transfer) throws AccountNotFoundException {
         return transferDao.sendTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount());
