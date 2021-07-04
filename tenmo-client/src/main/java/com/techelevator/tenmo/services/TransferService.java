@@ -293,7 +293,7 @@ public class TransferService {
         int menuChoice = -1;
 
         try {
-            menuChoice = Integer.parseInt(input);
+            menuChoice = Integer.parseInt(choice);
         } catch (NumberFormatException e) {
             System.out.println("Invalid input type.");
             processRequests(pendingRequests);
