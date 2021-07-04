@@ -9,7 +9,7 @@ INSERT INTO users (user_id, username, password_hash) VALUES
 INSERT INTO accounts (account_id, user_id, balance) VALUES
 (2000, 1000, 1000),
 (2001, 1001, 5000),
-(2002, 1002, 1500);
+(2002, 1002, 500);
 
 
 INSERT INTO transfer_types(transfer_type_id, transfer_type_desc) VALUES
@@ -22,8 +22,8 @@ INSERT INTO transfer_statuses(transfer_status_id, transfer_status_desc) VALUES
 (3, 'Rejected');
 
 INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES
-( , 2, 1, 2000, 2001, 30),
-( , 2, 2, 2001, 2002, 60),
-( , 1, 1, 2002, 2000, 100);
+(3000 , 2, 1, 2000, 2001, 30),
+(3001 , 2, 2, 2001, 2002, 60),
+(3002 , 1, 1, 2002, 2000, 100);
 
 

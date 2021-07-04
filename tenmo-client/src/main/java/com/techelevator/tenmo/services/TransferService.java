@@ -24,6 +24,7 @@ public class TransferService {
     private String baseUrl;
     private RestTemplate restTemplate = new RestTemplate();
     private AuthenticatedUser user;
+    private Account account;
 
     public TransferService(String baseUrl, AuthenticatedUser user) {
         this.baseUrl = baseUrl;
@@ -126,8 +127,10 @@ public class TransferService {
                 return;
             }
 
+
             transfer.setAccountFrom(user.getUser().getId() + 1000);
             transfer.setAccountTo(recipientId + 1000);
+
             System.out.println("Enter amount: ");
 
                 try {
@@ -151,26 +154,9 @@ public class TransferService {
                 System.out.println("-------------------------------------------");
 
         } catch (Exception e) {
-            System.out.println("Invalid user ID");
+            System.out.println("Transfer was not successful.");
         }
     }
-
-//    public User[] listAllUsers(){
-//        User[] users = null;
-//        try{
-//            users = restTemplate.getForObject(baseUrl + "users", User[].class);
-//            for (User recipient : users) {
-//                if (recipient.getId() != user.getUser().getId()) {
-//                    System.out.println(recipient.getId() + "\t" + recipient.getUsername());
-//                }
-//            }
-//        }catch (RestClientResponseException e){
-//            System.out.println("Your request could not be completed.");
-//        }
-//        return users;
-//    }
-
-
 
 
     private HttpEntity<Transfer> transferHttpEntity(Transfer transfer){
