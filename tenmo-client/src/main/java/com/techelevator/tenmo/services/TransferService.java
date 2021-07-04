@@ -219,29 +219,6 @@ public class TransferService {
         }
     }
 
-//    private Transfer[] viewRequests() {
-//        Transfer[] pendingRequests = null;
-//        try {
-//            pendingRequests = restTemplate.exchange(baseUrl + "users/" + user.getUser().getId() + "/transfers", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
-//            System.out.println("---------------------------------------------------\n " +
-//                    "Pending Transfers\n" +
-//                    "  ID            To            Amount\n" +
-//                    "---------------------------------------------------");
-//            boolean userHasPendingRequests = false;
-//            for (Transfer request : pendingRequests) {
-//                if (request.getStatusId() == 1) {
-//                    userHasPendingRequests = true;
-//                    System.out.println(request.getTransferId() + "\t\t\t" + request.getAccountFrom() + "\t\t\t" + request.getTransferAmount());
-//                }
-//            }
-//            System.out.println("---------");
-//            System.out.println("Please enter transfer ID to approve or reject (0 to cancel)");
-//        } catch (Exception e) {
-//            System.out.println("Unable to find any pending requests.");
-//        }
-//        return pendingRequests;
-//    }
-
     public List<Transfer> viewRequests() {
         Transfer[] requests = null;
         List<Transfer> pendingRequests = new ArrayList<>();
@@ -258,13 +235,14 @@ public class TransferService {
             if (userHasPendingRequests) {
                 System.out.println("---------------------------------------------------\n " +
                         "Pending Transfers\n" +
-                        "  ID            To            Amount\n" +
+                        " ID              To                 Amount\n" +
                         "---------------------------------------------------");
                 for (Transfer request : pendingRequests) {
                     System.out.println(request.getTransferId() + "\t\t\t" + request.getUserFrom() + "\t\t\t" + request.getTransferAmount());
                 }
                 System.out.println("---------");
                 System.out.println("Please enter transfer ID to approve or reject (0 to cancel)");
+                //
             } else {
                 System.out.println("No pending requests.");
             }

@@ -3,6 +3,7 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.JdbcTransferDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Transfer;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -36,6 +37,7 @@ public class TransferController {
         return transferDao.sendTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount());
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "transfers/requests", method = RequestMethod.POST)
     public String requestTransfer(@RequestBody Transfer transfer) throws AccountNotFoundException {
         return transferDao.requestTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getTransferAmount());
