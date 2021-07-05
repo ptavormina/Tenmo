@@ -33,23 +33,26 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public Account find(int accountId) throws AccountNotFoundException {
+    public Account findByAccountId(int accountId) throws AccountNotFoundException {
         String sql = "SELECT * FROM accounts WHERE account_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountId);
         if (results.next()) {
             return mapRowToAccount(results);
         } throw new AccountNotFoundException("Account " + accountId + " was not found.");
-
     }
 
     @Override
     public Account findByUserId(int userId) throws AccountNotFoundException {
-        return null;
+        String sql = "SELECT * FROM accounts WHERE user_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+        if (results.next()) {
+            return mapRowToAccount(results);
+        } throw new AccountNotFoundException("Account " + userId + " was not found.");
     }
 
     @Override
     public BigDecimal addFunds(BigDecimal amount, int accountId) throws AccountNotFoundException {
-        Account account = find(accountId);
+        Account account = findByAccountId(accountId);
         BigDecimal updatedBalance = account.getBalance().add(amount);
         String sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
 
@@ -59,7 +62,7 @@ public class JdbcAccountDao implements AccountDao {
 
     @Override
     public BigDecimal subtractFunds(BigDecimal amount, int accountId) throws AccountNotFoundException {
-        Account account = find(accountId);
+        Account account = findByAccountId(accountId);
         BigDecimal updatedBalance = account.getBalance().subtract(amount);
         String sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
 

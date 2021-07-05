@@ -112,22 +112,15 @@ public class TransferService {
         String response = scanner.nextLine();
         int recipientId = Integer.parseInt(response);
 
-        if (recipientId == 0) {
-            return;
-        }
-
-        try {
+        if (recipientId != 0) {
             transfer.setAccountFrom(user.getUser().getId() + 1000);
             transfer.setAccountTo(recipientId + 1000);
-        } catch (Exception e) {
-            System.out.println("Invalid user");
-            return;
-        }
 
-        System.out.println("Enter amount:");
+            System.out.println("Enter amount:");
             try {
                 String amountResponse = scanner.nextLine();
                 double transferAmount = Double.parseDouble(amountResponse);
+
                 if (transferAmount <= 0) {
                     System.out.println("Transfers must be a positive, nonzero amount. Try again...");
                     System.out.println();
@@ -135,24 +128,25 @@ public class TransferService {
                 }
                 if (transferAmount > getCurrentBalanceAsDouble()) {
                     System.out.println("Unlike real banks, you're not allowed to spend more than you have here.");
-                    return;
+                    sendTransfer();
                 }
                 if (transferAmount > 0) {
-                        BigDecimal transferAmount1 = new BigDecimal(transferAmount);
-                        transfer.setTransferAmount(transferAmount1);
-                    }
-                } catch (Exception e) {
-                    System.out.println("Invalid input, please try again.");
-                    sendTransfer();
+                    BigDecimal transferAmount1 = new BigDecimal(transferAmount);
+                    transfer.setTransferAmount(transferAmount1);
                 }
-                try {
-                    restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, transferHttpEntity(transfer), String.class).getBody();
-                    System.out.println("Transfer successful.");
-                    System.out.println("-------------------------------------------");
-                } catch (Exception e) {
-                    System.out.println("Invalid user ID, please try again.");
-                    sendTransfer();
-                }
+            } catch (Exception e) {
+                System.out.println("Invalid input, please try again.");
+                sendTransfer();
+            }
+            try {
+                restTemplate.exchange(baseUrl + "transfers", HttpMethod.POST, transferHttpEntity(transfer), String.class).getBody();
+                System.out.println("Transfer successful.");
+                System.out.println("-------------------------------------------");
+            } catch (Exception e) {
+                System.out.println("Invalid user ID, please try again.");
+                sendTransfer();
+            }
+        }
     }
 
     public User[] listOtherUsers() {
@@ -184,42 +178,41 @@ public class TransferService {
         String idResponse = scanner.nextLine();
         int recipientId = Integer.parseInt(idResponse);
 
-        if (recipientId == 0) {
-             return;
-        }
+        if (recipientId != 0) {
 
-        try {
-            transferRequest.setAccountFrom(user.getUser().getId() + 1000);
-            transferRequest.setAccountTo(recipientId + 1000);
-        } catch (Exception e) {
-            System.out.println("Invalid user");
-            return;
-        }
+            try {
+                transferRequest.setAccountFrom(user.getUser().getId() + 1000);
+                transferRequest.setAccountTo(recipientId + 1000);
+            } catch (Exception e) {
+                System.out.println("Invalid user");
+                return;
+            }
 
-        System.out.println("Enter request amount:");
-        try {
-            String response = scanner.nextLine();
-            double requestAmount = Double.parseDouble(response);
-            if (requestAmount <= 0) {
-                System.out.println("Requests must be greater than 0");
-                System.out.println();
+            System.out.println("Enter request amount:");
+            try {
+                String response = scanner.nextLine();
+                double requestAmount = Double.parseDouble(response);
+                if (requestAmount <= 0) {
+                    System.out.println("Requests must be greater than 0");
+                    System.out.println();
+                    giveMeMoney();
+                }
+                if (requestAmount > 0) {
+                    BigDecimal requestAmount1 = new BigDecimal(requestAmount);
+                    transferRequest.setTransferAmount(requestAmount1);
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input, please try again.");
                 giveMeMoney();
             }
-            if (requestAmount > 0) {
-                BigDecimal requestAmount1 = new BigDecimal(requestAmount);
-                transferRequest.setTransferAmount(requestAmount1);
+            try {
+                restTemplate.exchange(baseUrl + "transfers/requests", HttpMethod.POST, transferHttpEntity(transferRequest), String.class).getBody();
+                System.out.println("Request sent successfully.");
+                System.out.println("-------------------------------------------");
+            } catch (Exception e) {
+                System.out.println("Invalid user ID, please try again.");
+                giveMeMoney();
             }
-        } catch (Exception e) {
-            System.out.println("Invalid input, please try again.");
-            giveMeMoney();
-        }
-        try {
-            restTemplate.exchange(baseUrl + "transfers/requests", HttpMethod.POST, transferHttpEntity(transferRequest), String.class).getBody();
-            System.out.println("Request sent successfully.");
-            System.out.println("-------------------------------------------");
-        } catch (Exception e) {
-            System.out.println("Invalid user ID, please try again.");
-            giveMeMoney();
         }
     }
 
@@ -266,51 +259,50 @@ public class TransferService {
             requestId = Integer.parseInt(input);
         } catch (NumberFormatException e) {
             System.out.println("Invalid input type.");
-            processRequests(pendingRequests);
+            viewRequests();
         }
 
-        if (requestId == 0) {
-            return;
-        }
+        if (requestId != 0) {
 
-        Transfer chosenRequest = null;
-        for (Transfer pendingRequest : pendingRequests) {
-            if (requestId == pendingRequest.getTransferId()) {
-                chosenRequest = pendingRequest;
+            Transfer chosenRequest = null;
+            for (Transfer pendingRequest : pendingRequests) {
+                if (requestId == pendingRequest.getTransferId()) {
+                    chosenRequest = pendingRequest;
+                }
             }
-        }
 
-        if (chosenRequest == null) {
-            System.out.println("Could not find transfer with that ID. Please try again.");
-            processRequests(pendingRequests);
-        }
+            if (chosenRequest == null) {
+                System.out.println("Could not find transfer with that ID. Please try again.");
+                viewRequests();
+            }
 
-        System.out.println("----------------------------------");
-        System.out.println("1: Approve");
-        System.out.println("2: Reject");
-        System.out.println("0: Exit Menu");
-        System.out.println("-----------");
-        System.out.println("Please choose an option:");
-        String choice = scanner.nextLine();
-        int menuChoice = -1;
+            System.out.println("----------------------------------");
+            System.out.println("1: Approve");
+            System.out.println("2: Reject");
+            System.out.println("0: Exit Menu");
+            System.out.println("-----------");
+            System.out.println("Please choose an option:");
+            String choice = scanner.nextLine();
+            int menuChoice = -1;
 
-        try {
-            menuChoice = Integer.parseInt(choice);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input type.");
-            processRequests(pendingRequests);
-        }
+            try {
+                menuChoice = Integer.parseInt(choice);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input type.");
+                viewRequests();
+            }
 
-        if (menuChoice == 0) {
-            System.out.println("Okay, but don't forget to pay your friend later!");
-            return;
-        } else if (menuChoice == 1) {
-            approveRequest(chosenRequest);
-        } else if (menuChoice == 2) {
-            declineRequest(chosenRequest);
-        } else {
-            System.out.println("Invalid choice.");
-            processRequests(pendingRequests);
+            if (menuChoice == 0) {
+                System.out.println("Okay, but don't forget to pay your friend later!");
+
+            } else if (menuChoice == 1) {
+                approveRequest(chosenRequest);
+            } else if (menuChoice == 2) {
+                declineRequest(chosenRequest);
+            } else {
+                System.out.println("Invalid choice.");
+                processRequests(pendingRequests);
+            }
         }
     }
 
