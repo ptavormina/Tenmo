@@ -327,6 +327,7 @@ public class TransferService {
     public void declineRequest(Transfer request) {
         restTemplate.exchange(baseUrl + "transfers/requests/3", HttpMethod.PUT, transferHttpEntity(request), String.class).getBody();
         System.out.println("Request declined.");
+        viewRequests();
     }
 
     public double getCurrentBalanceAsDouble() {
