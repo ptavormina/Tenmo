@@ -67,40 +67,41 @@ public class TransferService {
         String input = scanner.nextLine();
         int transferId = Integer.parseInt(input);
 
-        if (transferId == 0) {
-            return;
-        }
-        try {
-            details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
-        } catch (Exception e) {
-            System.out.println("Invalid transfer ID, try again");
-            listTransfers();
-        }
+        if (transferId != 0) {
 
-        //before printing the transfer details, gonna decode the type id and status id:
-        String transferType = "";
-        transferType = details.getTypeId() == 1 ? "Request" : "Send";
-        String transferStatus = "";
-        if (details.getStatusId() == 1) {
-            transferStatus = "Pending";
-        }
-        if (details.getStatusId() == 2) {
-            transferStatus = "Accepted";
-        }
-        if (details.getStatusId() == 3) {
-            transferStatus = "Rejected";
-        }
+            try {
+                details = restTemplate.exchange(baseUrl + "transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+            } catch (Exception e) {
+                System.out.println("Invalid transfer ID, try again");
+                listTransfers();
+            }
 
-        System.out.println("---------------------------------------------------");
-        System.out.println("Transfer Details");
-        System.out.println("---------------------------------------------------");
-        System.out.println("Id:      " + details.getTransferId());
-        System.out.println("From:    " + details.getUserFrom());
-        System.out.println("To:      " + details.getUserTo());
-        System.out.println("Type:    " + transferType);
-        System.out.println("Status:  " + transferStatus);
-        System.out.println("Amount:  $" + details.getTransferAmount());
-        return;
+            if (details != null) {
+                //before printing the transfer details, gonna decode the type id and status id:
+                String transferType = "";
+                transferType = details.getTypeId() == 1 ? "Request" : "Send";
+                String transferStatus = "";
+                if (details.getStatusId() == 1) {
+                    transferStatus = "Pending";
+                }
+                if (details.getStatusId() == 2) {
+                    transferStatus = "Accepted";
+                }
+                if (details.getStatusId() == 3) {
+                    transferStatus = "Rejected";
+                }
+
+                System.out.println("---------------------------------------------------");
+                System.out.println("Transfer Details");
+                System.out.println("---------------------------------------------------");
+                System.out.println("Id:      " + details.getTransferId());
+                System.out.println("From:    " + details.getUserFrom());
+                System.out.println("To:      " + details.getUserTo());
+                System.out.println("Type:    " + transferType);
+                System.out.println("Status:  " + transferStatus);
+                System.out.println("Amount:  $" + details.getTransferAmount());
+            }
+        }
     }
 
     public void sendTransfer() {
