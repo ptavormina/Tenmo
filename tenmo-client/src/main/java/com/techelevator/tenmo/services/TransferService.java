@@ -253,36 +253,6 @@ public class TransferService {
         }
         return pendingRequests;
     }
-    public Transfer updatePendingTransfer(){
-        Transfer [] transfers = null;
-        Scanner scanner = new Scanner(System.in);
-        String userInput = scanner.nextLine();
-        int pendingTransfer = Integer.parseInt(userInput);
-
-        if (pendingTransfer == 0){
-            return;
-        }
-        for (Transfer pending : transfers){
-            if(pendingTransfer == pending.getTransferId()){
-                System.out.println("----------------------------------");
-                System.out.println();
-            }
-        }
-
-
-
-        int status = Integer.parseInt(userInput);
-        String transferStatusName = "";
-        if(status == 3){
-            transferStatusName = "Rejected";
-        }
-        if (status == 2) {
-            transferStatusName = "Accepted";
-        }
-        if (status == 1) {
-            transferStatusName = "Pending";
-        }
-    }
 
     public void processRequests(List<Transfer> pendingRequests) {
         System.out.println("---------");
