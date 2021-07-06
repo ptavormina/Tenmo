@@ -10,7 +10,7 @@ public interface AccountDao {
 
     List<Account> list();
 
-    Account find(int accountId) throws AccountNotFoundException;
+    Account findByAccountId(int accountId) throws AccountNotFoundException;
 
     Account findByUserId(int userId) throws AccountNotFoundException;
 
